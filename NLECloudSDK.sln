@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLECloudSDK", "NLECloudSDK\NLECloudSDK.csproj", "{0B6DD2C3-3322-469A-A272-FD744B05B7EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLECloudSDKSample", "NLECloudSDKSample\NLECloudSDKSample.csproj", "{2F096F17-0FDA-4A19-972E-11B6B987D8C9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0B6DD2C3-3322-469A-A272-FD744B05B7EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B6DD2C3-3322-469A-A272-FD744B05B7EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B6DD2C3-3322-469A-A272-FD744B05B7EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B6DD2C3-3322-469A-A272-FD744B05B7EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F096F17-0FDA-4A19-972E-11B6B987D8C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F096F17-0FDA-4A19-972E-11B6B987D8C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F096F17-0FDA-4A19-972E-11B6B987D8C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F096F17-0FDA-4A19-972E-11B6B987D8C9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

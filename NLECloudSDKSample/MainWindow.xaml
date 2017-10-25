@@ -1,0 +1,155 @@
+﻿<Window x:Class="NLECloudSDKSample.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="云平台全API DEMO演示" Height="557" Width="866">
+    <Grid>
+        <TabControl HorizontalAlignment="Left" Height="261" Margin="0,10,0,0" VerticalAlignment="Top" Width="850">
+            <TabItem Header="帐号API" Height="21" VerticalAlignment="Bottom">
+                <Grid Background="#FFE5E5E5" Margin="0,0,0,-5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="说明：&#xA;1、App.config中ServerDomain定义云平台接口的API域名，默认为新大陆物联网云平台API域名，测试环境或私有云请更改为自己的&#xD;&#xA;2、用户名与密码分别是云平台注册的帐号与密码，需一致，否则登录会失败。登录后会返回一个Token，该Token为所有其它API接口&#xA;调用的凭证，所以调用其它API必须要先登录然后得到这个Token，再调用其它API时带上这个Token才能正确调用其它API&#xA;3、接下来每个API的调用都会在代码中加以注释说明，请参考各个方法&#xA;4、每个API会在下方分别列出请求的原始JSON格式或返回的JSON格式供参考，至于每个JSON转成对象，则看个个调用的代码" HorizontalAlignment="Left" Margin="28,81,0,0" VerticalAlignment="Top" Width="755" Height="106"/>
+                    <Button x:Name="btnLogin" Content="API：用户登录" HorizontalAlignment="Left" Margin="306,53,0,0" VerticalAlignment="Top" Width="107" Click="btnLogin_Click"/>
+                    <TextBox x:Name="txtUserName" HorizontalAlignment="Left" Height="23" Margin="78,51,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="89" VerticalContentAlignment="Center" Text="18965562233"/>
+                    <Label Content="用户名" HorizontalAlignment="Left" Margin="27,50,0,0" VerticalAlignment="Top"/>
+                    <Label Content="密码" HorizontalAlignment="Left" Margin="179,50,0,0" VerticalAlignment="Top"/>
+                    <TextBox x:Name="txtToken" HorizontalAlignment="Left" Height="23" Margin="107,189,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="729" VerticalContentAlignment="Center"/>
+                    <Label Content="登录Token" HorizontalAlignment="Left" Margin="27,188,0,0" VerticalAlignment="Top" Width="75"/>
+                    <Label Content="API接口" HorizontalAlignment="Left" Margin="29,20,0,0" VerticalAlignment="Top" Width="58"/>
+                    <TextBox x:Name="txtLoginAPI" HorizontalAlignment="Left" Height="23" Margin="87,22,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="278" VerticalContentAlignment="Center" IsReadOnly="True" Text="v2/Account/Login"/>
+                    <PasswordBox x:Name="txtPasswd" HorizontalAlignment="Left" Margin="218,53,0,0" VerticalAlignment="Top" Width="69" Height="23" Password="123456"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="设备API">
+                <Grid Background="#FFE5E5E5">
+                    <Label Content="API接口" HorizontalAlignment="Left" Margin="6,11,0,0" VerticalAlignment="Top" Width="58"/>
+                    <TextBox x:Name="txtGatewayInfoAPI" HorizontalAlignment="Left" Height="23" Margin="64,13,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="356" VerticalContentAlignment="Center" IsReadOnly="True" Text="v2/Gateway/{gatewayTag}"/>
+                    <Label Content="设备标识" HorizontalAlignment="Left" Margin="432,11,0,0" VerticalAlignment="Top" Width="68"/>
+                    <Button x:Name="btnGatewayInfo" Content="API：获取某个网关的信息" HorizontalAlignment="Left" Margin="632,15,0,0" VerticalAlignment="Top" Width="166" Click="btnGatewayInfo_Click"/>
+                    <TextBox x:Name="txtGatewayTag" HorizontalAlignment="Left" Height="23" Margin="489,12,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="123" VerticalContentAlignment="Center"/>
+                    <Button x:Name="btnSensorList" Content="API：获取某个网关的传感器列表" HorizontalAlignment="Left" Margin="631,49,0,0" VerticalAlignment="Top" Width="203" Click="btnSensorList_Click"/>
+                    <Label Content="API接口" HorizontalAlignment="Left" Margin="6,43,0,0" VerticalAlignment="Top" Width="58"/>
+                    <TextBox x:Name="txtSensorListAPI" HorizontalAlignment="Left" Height="23" Margin="64,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="356" VerticalContentAlignment="Center" IsReadOnly="True" Text="v2/Gateway/{gatewayTag}/SensorList"/>
+                    <GridSplitter HorizontalAlignment="Left" Height="100" Margin="247,117,0,0" VerticalAlignment="Top" Width="5"/>
+                    <Label Content="API接口" HorizontalAlignment="Left" Margin="6,76,0,0" VerticalAlignment="Top" Width="58"/>
+                    <TextBox x:Name="txtSensorAPI" HorizontalAlignment="Left" Height="23" Margin="64,78,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="356" VerticalContentAlignment="Center" IsReadOnly="True" Text="v2/Gateway/{gatewayTag}/Sensor/{apiTag}"/>
+                    <Label Content="APITag" HorizontalAlignment="Left" Margin="432,76,0,0" VerticalAlignment="Top" Width="68"/>
+                    <Button x:Name="btnSensor" Content="API： 获取某个传感器的信息" HorizontalAlignment="Left" Margin="632,80,0,0" VerticalAlignment="Top" Width="166" Click="btnSensor_Click"/>
+                    <TextBox x:Name="txtSensorApiTag" HorizontalAlignment="Left" Height="23" Margin="489,77,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="123" VerticalContentAlignment="Center"/>
+                    <Button x:Name="btnActuatorList" Content="API：获取某个网关的执行器列表" HorizontalAlignment="Left" Margin="631,113,0,0" VerticalAlignment="Top" Width="203" Click="btnActuatorList_Click"/>
+                    <Label Content="API接口" HorizontalAlignment="Left" Margin="6,107,0,0" VerticalAlignment="Top" Width="58"/>
+                    <TextBox x:Name="txtActuatorListAPI" HorizontalAlignment="Left" Height="23" Margin="64,109,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="356" VerticalContentAlignment="Center" IsReadOnly="True" Text="v2/Gateway/{gatewayTag}/ActuatorList"/>
+                    <Label Content="API接口" HorizontalAlignment="Left" Margin="6,135,0,0" VerticalAlignment="Top" Width="58"/>
+                    <TextBox x:Name="txtActuatorAPI" HorizontalAlignment="Left" Height="23" Margin="64,137,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="356" VerticalContentAlignment="Center" IsReadOnly="True" Text="v2/Gateway/{gatewayTag}/Actuator/{apiTag}"/>
+                    <Label Content="APITag" HorizontalAlignment="Left" Margin="432,135,0,0" VerticalAlignment="Top" Width="68"/>
+                    <Button x:Name="btnActuator" Content="API： 获取某个执行器的信息" HorizontalAlignment="Left" Margin="632,139,0,0" VerticalAlignment="Top" Width="166" Click="btnActuator_Click"/>
+                    <TextBox x:Name="txtActuatorApiTag" HorizontalAlignment="Left" Height="23" Margin="489,136,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="123" VerticalContentAlignment="Center"/>
+                    <Button x:Name="btnCameraList" Content="API：获取某个网关的摄像头列表" HorizontalAlignment="Left" Margin="631,170,0,0" VerticalAlignment="Top" Width="203" Click="btnCameraList_Click"/>
+                    <Label Content="API接口" HorizontalAlignment="Left" Margin="6,164,0,0" VerticalAlignment="Top" Width="58"/>
+                    <TextBox x:Name="txtCameraListAPI" HorizontalAlignment="Left" Height="23" Margin="64,166,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="356" VerticalContentAlignment="Center" IsReadOnly="True" Text="v2/Gateway/{gatewayTag}/CameraList" />
+                    <Label Content="API接口" HorizontalAlignment="Left" Margin="6,196,0,0" VerticalAlignment="Top" Width="58"/>
+                    <TextBox x:Name="txtCameraAPI" HorizontalAlignment="Left" Height="23" Margin="64,198,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="356" VerticalContentAlignment="Center" IsReadOnly="True" Text="v2/Gateway/{gatewayTag}/Camera/{apiTag}"/>
+                    <Label Content="APITag" HorizontalAlignment="Left" Margin="432,196,0,0" VerticalAlignment="Top" Width="68"/>
+                    <Button x:Name="btnCamera" Content="API： 获取某个摄像头的信息" HorizontalAlignment="Left" Margin="632,200,0,0" VerticalAlignment="Top" Width="166" Click="btnCamera_Click"/>
+                    <TextBox x:Name="txtCameraApiTag" HorizontalAlignment="Left" Height="23" Margin="489,197,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="123" VerticalContentAlignment="Center"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="网关数据API" HorizontalAlignment="Left" Height="21" VerticalAlignment="Top" Width="83">
+                <Grid Background="#FFE5E5E5">
+                    <Label Content="API接口" HorizontalAlignment="Left" Margin="6,49,0,0" VerticalAlignment="Top" Width="58"/>
+                    <TextBox x:Name="txtOnOfflineAPI" HorizontalAlignment="Left" Height="23" Margin="73,51,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="456" VerticalContentAlignment="Center" IsReadOnly="True" Text="v2/Gateway/{gatewayTag}/OnOffline"/>
+                    <Label Content="设备标识" HorizontalAlignment="Left" Margin="7,11,0,0" VerticalAlignment="Top" Width="68"/>
+                    <Button x:Name="btnOnOffline" Content="API：获取某个网关的当前在/离线状态" HorizontalAlignment="Left" Margin="545,53,0,0" VerticalAlignment="Top" Width="253" Click="btnOnOffline_Click"/>
+                    <TextBox x:Name="txtTab1GatewayTag" HorizontalAlignment="Left" Height="23" Margin="73,12,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="273" VerticalContentAlignment="Center"/>
+                    <Label Content="API接口" HorizontalAlignment="Left" Margin="6,92,0,0" VerticalAlignment="Top" Width="58"/>
+                    <TextBox x:Name="txtHistoryPagerOnOfflineAPI" HorizontalAlignment="Left" Height="23" Margin="73,94,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="456" VerticalContentAlignment="Center" IsReadOnly="True" Text="v2/Gateway/{gatewayTag}/HistoryPagerOnOffline"/>
+                    <Button x:Name="btnHistoryPagerOnOffline" Content="API：获取某个网关的历史分页在/离线状态" HorizontalAlignment="Left" Margin="545,96,0,0" VerticalAlignment="Top" Width="273" Click="btnHistoryPagerOnOffline_Click"/>
+                    <Label Content="API接口" HorizontalAlignment="Left" Margin="6,143,0,0" VerticalAlignment="Top" Width="58"/>
+                    <TextBox x:Name="txtStatusAPI" HorizontalAlignment="Left" Height="23" Margin="73,145,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="456" VerticalContentAlignment="Center" IsReadOnly="True" Text="v2/Gateway/{gatewayTag}/Status"/>
+                    <Button x:Name="btnStatus" Content="API：获取某个网关的当前启/禁状态" HorizontalAlignment="Left" Margin="545,147,0,0" VerticalAlignment="Top" Width="253" Click="btnStatus_Click"/>
+                    <Label Content="API接口" HorizontalAlignment="Left" Margin="6,191,0,0" VerticalAlignment="Top" Width="58"/>
+                    <TextBox x:Name="txtNewestDatasAPI" HorizontalAlignment="Left" Height="23" Margin="73,193,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="456" VerticalContentAlignment="Center" IsReadOnly="True" Text="v2/Gateway/{gatewayTag}/NewestDatas"/>
+                    <Button x:Name="btn_NewestDatas" Content="API：获取某个网关的所有传感器、执行器最新值" HorizontalAlignment="Left" Margin="545,195,0,0" VerticalAlignment="Top" Width="273" Click="btn_NewestDatas_Click"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="网关传感数据API" HorizontalAlignment="Left" Height="21" VerticalAlignment="Top" Width="108">
+                <Grid Background="#FFE5E5E5">
+                    <Label Content="设备标识" HorizontalAlignment="Left" Margin="3,11,0,0" VerticalAlignment="Top" Width="68"/>
+                    <TextBox x:Name="txtTab2GatewayTag" HorizontalAlignment="Left" Height="23" Margin="64,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="295" VerticalContentAlignment="Center"/>
+                    <Button x:Name="btnNewestData" Content="API：获取某个传感器的最新值" HorizontalAlignment="Left" Margin="631,49,0,0" VerticalAlignment="Top" Width="203" Click="btnNewestData_Click"/>
+                    <Label Content="API接口" HorizontalAlignment="Left" Margin="6,43,0,0" VerticalAlignment="Top" Width="58"/>
+                    <TextBox x:Name="txtNewestDataAPI" HorizontalAlignment="Left" Height="23" Margin="64,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="356" VerticalContentAlignment="Center" IsReadOnly="True" Text="v2/Gateway/{gatewayTag}/Sensor/{apiTag}/NewestData"/>
+                    <GridSplitter HorizontalAlignment="Left" Height="100" Margin="247,117,0,0" VerticalAlignment="Top" Width="5"/>
+                    <Label Content="API接口" HorizontalAlignment="Left" Margin="6,76,0,0" VerticalAlignment="Top" Width="58"/>
+                    <TextBox x:Name="txtHistoryDataAPI" HorizontalAlignment="Left" Height="23" Margin="64,78,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="356" VerticalContentAlignment="Center" IsReadOnly="True" Text="v2/Gateway/{gatewayTag}/Sensor/{apiTag}/HistoryData"/>
+                    <Label Content="APITag" HorizontalAlignment="Left" Margin="461,76,0,0" VerticalAlignment="Top" Width="68"/>
+                    <Button x:Name="btnHistoryData" Content="API：获取某个传感器的历史数据" HorizontalAlignment="Left" Margin="632,80,0,0" VerticalAlignment="Top" Width="202" Click="btnHistoryData_Click"/>
+                    <TextBox x:Name="txtHistoryDataApiTag" HorizontalAlignment="Left" Height="23" Margin="523,77,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="89" VerticalContentAlignment="Center"/>
+                    <Button x:Name="btnHistoryPagerData" Content="API：获取某个传感器的历史分页数据" HorizontalAlignment="Left" Margin="631,113,0,0" VerticalAlignment="Top" Width="203" Click="btnHistoryPagerData_Click"/>
+                    <Label Content="API接口" HorizontalAlignment="Left" Margin="6,107,0,0" VerticalAlignment="Top" Width="58"/>
+                    <TextBox x:Name="txtHistoryPagerDataAPI" HorizontalAlignment="Left" Height="23" Margin="64,109,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="356" VerticalContentAlignment="Center" IsReadOnly="True" Text="v2/Gateway/{gatewayTag}/Sensor/{apiTag}/HistoryPagerData"/>
+                    <Label Content="API接口" HorizontalAlignment="Left" Margin="6,135,0,0" VerticalAlignment="Top" Width="58"/>
+                    <TextBox x:Name="txtActuatorNewestDataAPI" HorizontalAlignment="Left" Height="23" Margin="64,137,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="356" VerticalContentAlignment="Center" IsReadOnly="True" Text="v2/Gateway/{gatewayTag}/Actuator/{apiTag}/NewestData"/>
+                    <Label Content="APITag" HorizontalAlignment="Left" Margin="461,136,0,0" VerticalAlignment="Top" Width="68"/>
+                    <Button x:Name="btnActuatorNewestData" Content="API： 获取某个执行器的最新值" HorizontalAlignment="Left" Margin="632,139,0,0" VerticalAlignment="Top" Width="202" Click="btnActuatorNewestData_Click"/>
+                    <TextBox x:Name="txtActuatorNewestDataApiTag" HorizontalAlignment="Left" Height="23" Margin="523,137,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="89" VerticalContentAlignment="Center"/>
+                    <Button x:Name="btnActuatorHistoryData" Content="API：获取某个执行器的历史数据" HorizontalAlignment="Left" Margin="631,170,0,0" VerticalAlignment="Top" Width="203" Click="btnActuatorHistoryData_Click"/>
+                    <Label Content="API接口" HorizontalAlignment="Left" Margin="6,164,0,0" VerticalAlignment="Top" Width="58"/>
+                    <TextBox x:Name="txtActuatorHistoryDataAPI" HorizontalAlignment="Left" Height="23" Margin="64,166,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="356" VerticalContentAlignment="Center" IsReadOnly="True" Text="v2/Gateway/{gatewayTag}/Actuator/{apiTag}/HistoryData" />
+                    <Label Content="API接口" HorizontalAlignment="Left" Margin="6,196,0,0" VerticalAlignment="Top" Width="58"/>
+                    <TextBox x:Name="txtActuatorHistoryPagerDataAPI" HorizontalAlignment="Left" Height="23" Margin="64,198,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="356" VerticalContentAlignment="Center" IsReadOnly="True" Text="v2/Gateway/{gatewayTag}/Actuator/{apiTag}/HistoryPagerData"/>
+                    <Label Content="APITag" HorizontalAlignment="Left" Margin="461,196,0,0" VerticalAlignment="Top" Width="68"/>
+                    <Button x:Name="btnActuatorHistoryPagerData" Content="API： 获取某个执行器的历史分页数据" HorizontalAlignment="Left" Margin="632,200,0,0" VerticalAlignment="Top" Width="202" Click="btnActuatorHistoryPagerData_Click"/>
+                    <TextBox x:Name="txtActuatorHistoryPagerDataApiTag" HorizontalAlignment="Left" Height="23" Margin="523,197,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="89" VerticalContentAlignment="Center"/>
+                    <Label Content="APITag" HorizontalAlignment="Left" Margin="461,45,0,0" VerticalAlignment="Top" Width="68"/>
+                    <TextBox x:Name="txtNewestDataApiTag" HorizontalAlignment="Left" Height="23" Margin="523,46,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="89" VerticalContentAlignment="Center"/>
+                    <Label Content="APITag" HorizontalAlignment="Left" Margin="461,109,0,0" VerticalAlignment="Top" Width="68"/>
+                    <TextBox x:Name="txtHistoryPagerDataApiTag" HorizontalAlignment="Left" Height="23" Margin="523,110,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="89" VerticalContentAlignment="Center"/>
+                    <Label Content="APITag" HorizontalAlignment="Left" Margin="461,166,0,0" VerticalAlignment="Top" Width="68"/>
+                    <TextBox x:Name="txtActuatorHistoryDataApiTag" HorizontalAlignment="Left" Height="23" Margin="523,167,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="89" VerticalContentAlignment="Center"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="项目API" HorizontalAlignment="Left" Height="21" VerticalAlignment="Top" Width="59">
+                <Grid Background="#FFE5E5E5">
+                    <Label Content="项目标识" HorizontalAlignment="Left" Margin="3,11,0,0" VerticalAlignment="Top" Width="68"/>
+                    <TextBox x:Name="txtProjectTag" HorizontalAlignment="Left" Height="23" Margin="64,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="295" VerticalContentAlignment="Center"/>
+                    <Button x:Name="btnProjectInfo" Content="API：获取某个项目的信息" HorizontalAlignment="Left" Margin="379,47,0,0" VerticalAlignment="Top" Width="203" Click="btnProjectInfo_Click"/>
+                    <Label Content="API接口" HorizontalAlignment="Left" Margin="6,43,0,0" VerticalAlignment="Top" Width="58"/>
+                    <TextBox x:Name="txtProjectInfoAPI" HorizontalAlignment="Left" Height="23" Margin="64,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="295" VerticalContentAlignment="Center" IsReadOnly="True" Text="v2/Project/{tag}"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="控制API" HorizontalAlignment="Left" Height="21" VerticalAlignment="Top" Width="59">
+                <Grid Background="#FFE5E5E5">
+                    <Label Content="ApiTag" HorizontalAlignment="Left" Margin="3,49,0,0" VerticalAlignment="Top" Width="68"/>
+                    <TextBox x:Name="txtControlApiTag" HorizontalAlignment="Left" Height="23" Margin="64,48,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="295" VerticalContentAlignment="Center"/>
+                    <Button x:Name="btnControl" Content="API： 控制某个执行器" HorizontalAlignment="Left" Margin="64,199,0,0" VerticalAlignment="Top" Width="203" Click="btnControl_Click"/>
+                    <Label Content="API接口" HorizontalAlignment="Left" Margin="6,165,0,0" VerticalAlignment="Top" Width="58"/>
+                    <TextBox x:Name="txtControlAPI" HorizontalAlignment="Left" Height="23" Margin="64,167,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="770" VerticalContentAlignment="Center" IsReadOnly="True" Text="v2/Gateway/{gatewayTag}/actuator/{apiTag}/Control?data={data}"/>
+                    <Label Content="设备标识" HorizontalAlignment="Left" Margin="3,13,0,0" VerticalAlignment="Top" Width="68"/>
+                    <TextBox x:Name="txtTab5GatewayTag" HorizontalAlignment="Left" Height="23" Margin="64,12,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="295" VerticalContentAlignment="Center"/>
+                    <Label Content="控制值" HorizontalAlignment="Left" Margin="3,83,0,0" VerticalAlignment="Top" Width="68"/>
+                    <TextBox x:Name="txtControlData" HorizontalAlignment="Left" Height="23" Margin="64,82,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="72" VerticalContentAlignment="Center"/>
+                    <Label Content="开关类：开=1，关=0，暂停=2 &#xD;&#xA;家居类：调光灯亮度=0~254，RGB灯色度=2~239，窗帘、卷闸门、幕布打开百分比=3%~100%，红外指令=1(on)2(off)" HorizontalAlignment="Left" Margin="62,113,0,0" VerticalAlignment="Top" Foreground="#FF378B37"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+        <RichTextBox x:Name="mTextBox" HorizontalAlignment="Left" Height="85" Margin="0,436,0,0" VerticalAlignment="Top" Width="850" IsReadOnly="True">
+            <FlowDocument>
+                <Paragraph>
+                    <Run Text=""/>
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
+        <RichTextBox x:Name="mTextBoxReq" HorizontalAlignment="Left" Height="85" Margin="0,304,0,0" VerticalAlignment="Top" Width="850" IsReadOnly="True">
+            <FlowDocument>
+                <Paragraph>
+                    <Run Text=""/>
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
+        <Label Content="请求" HorizontalAlignment="Left" Margin="-1,278,0,0" VerticalAlignment="Top" Width="250"/>
+        <Label Content="响应" HorizontalAlignment="Left" Margin="0,406,0,0" VerticalAlignment="Top" Width="250"/>
+
+    </Grid>
+</Window>
