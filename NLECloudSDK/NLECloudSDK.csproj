@@ -30,7 +30,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>DLL\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -39,6 +43,37 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\ApplicationSettings.cs" />
+    <Compile Include="Common\HttpHelper.cs" />
+    <Compile Include="Common\HttpMethod.cs" />
+    <Compile Include="Common\HttpReqEntity.cs" />
+    <Compile Include="Common\HttpResEntity.cs" />
+    <Compile Include="Common\JsonFormatter.cs" />
+    <Compile Include="Common\RequestAPIHelper.cs" />
+    <Compile Include="Common\ResultMsg.cs" />
+    <Compile Include="Common\ResultStatus.cs" />
+    <Compile Include="Common\TimeoutTask.cs" />
+    <Compile Include="Model\AccountLoginDTO.cs" />
+    <Compile Include="Model\AccountLoginResultDTO.cs" />
+    <Compile Include="Model\ApiPagingQueryBase.cs" />
+    <Compile Include="Model\GatewayDeviceActuatorInfoDTO.cs" />
+    <Compile Include="Model\GatewayDeviceCameraInfoDTO.cs" />
+    <Compile Include="Model\GatewayDeviceChartDataDTO.cs" />
+    <Compile Include="Model\GatewayDeviceDataDTO.cs" />
+    <Compile Include="Model\GatewayDeviceHistoryQryParas.cs" />
+    <Compile Include="Model\GatewayDeviceInfoDTO.cs" />
+    <Compile Include="Model\GatewayDeviceSensorInfoDTO.cs" />
+    <Compile Include="Model\GatewayInfoDTO.cs" />
+    <Compile Include="Model\GatewayOnlineDataDTO.cs" />
+    <Compile Include="Model\GatewayOnlineRecordListDTO.cs" />
+    <Compile Include="Model\GatewayDeviceListDataDTO.cs" />
+    <Compile Include="NLECloudAPIUrl.cs" />
+    <Compile Include="Pager\PagerParameters\LibPagerParameters.cs" />
+    <Compile Include="Pager\PagerSet\DataSetPagerSet.cs" />
+    <Compile Include="Pager\PagerSet\ListPagerSet.cs" />
+    <Compile Include="Pager\PagerSet\PagerSet.cs" />
+    <Compile Include="Model\ProjectInfoDTO.cs" />
+    <Compile Include="NLECloudAPI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

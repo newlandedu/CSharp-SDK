@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLECloudSDK;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,7 +21,10 @@ namespace NLECloudSDKSample
     /// </summary>
     public partial class MainWindow : Window
     {
+        //默认为新大陆物联网云平台API域名，测试环境或私有云请更改为自己的
+        public static String API_HOST = ApplicationSettings.Get("ApiHost"); 
         public const string OUT_STRING = "【{0}】{1}\r\n";
+        NLECloudAPI SDK = null;
 
         #region -- 构造函数 -- 
         
@@ -39,6 +43,8 @@ namespace NLECloudSDKSample
                 this.txtActuatorNewestDataAPI,this.txtActuatorHistoryDataAPI,this.txtActuatorHistoryPagerDataAPI,
                 this.txtProjectInfoAPI,this.txtControlAPI
             });
+
+            SDK = new NLECloudAPI(API_HOST);
         }
 
         #endregion
@@ -54,7 +60,7 @@ namespace NLECloudSDKSample
         {
             foreach (TextBox tb in tbList)
             {
-                tb.Text = RequestAPIHelper.ServerDomain + "/" + tb.Text;
+                tb.Text = API_HOST + "/" + tb.Text;
             }
         }
 
@@ -192,19 +198,15 @@ namespace NLECloudSDKSample
                 return;
             }
 
-            //1、先定义该API接口路径，可以从http://api.nlecloud.com/页面的 帐号API接口 中的 用户登录得知
-            String apiPath = txtLoginAPI.Text;
-
-            //2、根据该API接口 的请求参数中 得知需要创建个Body Parameters的参数对象，下面创建一个该类的对象
+            //1、根据该API接口 的请求参数中 得知需要创建个Body Parameters的参数对象，下面创建一个该类的对象
             AccountLoginDTO DTO = new AccountLoginDTO();
             DTO.Account = txtUserName.Text.Trim(); //帐号为云平台注册的手机号或用户名等
             DTO.Password = txtPasswd.Password.Trim();//密码为云平台注册的帐号密码
 
             //3、定义该API接口返回的对象,初始化为空
-            ResultMsg<AccountLoginResultDTO> qry = null;
-            qry = RequestAPIHelper.RequestServer<AccountLoginDTO, AccountLoginResultDTO>(apiPath, DTO);
+            ResultMsg<AccountLoginResultDTO> qry = SDK.UserLogin(DTO);
 
-            Out(qry, apiPath, DTO.DTOToJson());
+            Out(qry, txtLoginAPI.Text, DTO.DTOToJson());
 
             //请求成功
             if (qry.IsSuccess())
@@ -229,20 +231,10 @@ namespace NLECloudSDKSample
             if (!DeviceApiReqverify().IsSuccess())
                 return;
 
-             //1、先定义该API接口路径，可以从http://api.nlecloud.com/页面的得知
-            String apiPath = this.txtGatewayInfoAPI.Text;
-
-            //2、根据该API接口 的请求参数中 得知需要创建个URI Parameters String类型参数，所以该参数直接跟在apiPath中
             String gatewayTag = txtGatewayTag.Text;
-            apiPath = apiPath.Replace("{gatewayTag}", gatewayTag);//将API地址中的{gatewayTag}替换成真实设备标识
+            String apiPath = this.txtGatewayInfoAPI.Text.Replace("{gatewayTag}", gatewayTag);
 
-            //3、由于调用该API需要Token，所以我们定义了一个通用的对象HttpReqEntity，在AccessToken当成头部请求信息提交过去
-            HttpReqEntity req = new HttpReqEntity();
-            req.Method = HttpMethod.POST;
-            req.Headers.Add("AccessToken", txtToken.Text);
-
-            //4、定义该API接口返回的对象
-            ResultMsg<GatewayInfoDTO> qry = RequestAPIHelper.RequestServer<HttpReqEntity, GatewayInfoDTO>(apiPath, req);
+            var qry = SDK.GetGatewayInfo(gatewayTag, txtToken.Text);
 
             Out(qry, apiPath);
 
@@ -262,20 +254,10 @@ namespace NLECloudSDKSample
             if (!DeviceApiReqverify().IsSuccess())
                 return;
 
-            //1、先定义该API接口路径，可以从http://api.nlecloud.com/页面的得知
-            String apiPath = this.txtSensorListAPI.Text;
-
-            //2、根据该API接口 的请求参数中 得知需要创建个URI Parameters String类型参数，所以该参数直接跟在apiPath中
             String gatewayTag = txtGatewayTag.Text;
-            apiPath = apiPath.Replace("{gatewayTag}", gatewayTag);//将API地址中的{gatewayTag}替换成真实设备标识
+            String apiPath = this.txtSensorListAPI.Text.Replace("{gatewayTag}", gatewayTag);
 
-            //3、由于调用该API需要Token，所以我们定义了一个通用的对象HttpReqEntity，在AccessToken当成头部请求信息提交过去
-            HttpReqEntity req = new HttpReqEntity();
-            req.Method = HttpMethod.POST;
-            req.Headers.Add("AccessToken", txtToken.Text);
-
-            //4、定义该API接口返回的对象,由于是列表所以要用IEnumerable
-            ResultMsg<IEnumerable<GatewayDeviceSensorInfoDTO>> qry = RequestAPIHelper.RequestServer<HttpReqEntity, IEnumerable<GatewayDeviceSensorInfoDTO>>(apiPath, req);
+            var qry = SDK.GetSensorList(gatewayTag, txtToken.Text);
 
             Out(qry, apiPath);
 
@@ -308,13 +290,8 @@ namespace NLECloudSDKSample
             apiPath = apiPath.Replace("{gatewayTag}", txtGatewayTag.Text.Trim());//将API地址中的{gatewayTag}替换成真实设备标识
             apiPath = apiPath.Replace("{apiTag}", txtSensorApiTag.Text.Trim());//将API地址中的{apiTag}替换成真实传感器API标识
 
-            //3、由于调用该API需要Token，所以我们定义了一个通用的对象HttpReqEntity，在AccessToken当成头部请求信息提交过去
-            HttpReqEntity req = new HttpReqEntity();
-            req.Method = HttpMethod.POST;
-            req.Headers.Add("AccessToken", txtToken.Text);
 
-            //4、定义该API接口返回的对象
-            ResultMsg<GatewayDeviceSensorInfoDTO> qry = RequestAPIHelper.RequestServer<HttpReqEntity, GatewayDeviceSensorInfoDTO>(apiPath, req);
+            var qry = SDK.GetSensorInfo(txtGatewayTag.Text.Trim(), txtSensorApiTag.Text.Trim(), txtToken.Text);
 
             Out(qry, apiPath);
         }
@@ -332,20 +309,10 @@ namespace NLECloudSDKSample
             if (!DeviceApiReqverify().IsSuccess())
                 return;
 
-            //1、先定义该API接口路径，可以从http://api.nlecloud.com/页面的得知
-            String apiPath = this.txtActuatorListAPI.Text;
-
-            //2、根据该API接口 的请求参数中 得知需要创建个URI Parameters String类型参数，所以该参数直接跟在apiPath中
             String gatewayTag = txtGatewayTag.Text;
-            apiPath = apiPath.Replace("{gatewayTag}", gatewayTag);//将API地址中的{gatewayTag}替换成真实设备标识
+            String apiPath = this.txtActuatorListAPI.Text.Replace("{gatewayTag}", gatewayTag);
 
-            //3、由于调用该API需要Token，所以我们定义了一个通用的对象HttpReqEntity，在AccessToken当成头部请求信息提交过去
-            HttpReqEntity req = new HttpReqEntity();
-            req.Method = HttpMethod.POST;
-            req.Headers.Add("AccessToken", txtToken.Text);
-
-            //4、定义该API接口返回的对象,由于是列表所以要用IEnumerable
-            ResultMsg<IEnumerable<GatewayDeviceActuatorInfoDTO>> qry = RequestAPIHelper.RequestServer<HttpReqEntity, IEnumerable<GatewayDeviceActuatorInfoDTO>>(apiPath, req);
+            var qry = SDK.GetActuatorList(gatewayTag, txtToken.Text);
 
             Out(qry, apiPath);
 
@@ -376,15 +343,10 @@ namespace NLECloudSDKSample
 
             //2、根据该API接口 的请求参数中 得知需要创建两个URI Parameters String类型参数，所以该参数直接跟在apiPath中
             apiPath = apiPath.Replace("{gatewayTag}", txtGatewayTag.Text.Trim());//将API地址中的{gatewayTag}替换成真实设备标识
-            apiPath = apiPath.Replace("{apiTag}", txtActuatorApiTag.Text.Trim());//将API地址中的{apiTag}替换成真实执行器API标识
+            apiPath = apiPath.Replace("{apiTag}", txtActuatorApiTag.Text.Trim());//将API地址中的{apiTag}替换成真实传感器API标识
 
-            //3、由于调用该API需要Token，所以我们定义了一个通用的对象HttpReqEntity，在AccessToken当成头部请求信息提交过去
-            HttpReqEntity req = new HttpReqEntity();
-            req.Method = HttpMethod.POST;
-            req.Headers.Add("AccessToken", txtToken.Text);
 
-            //4、定义该API接口返回的对象
-            ResultMsg<GatewayDeviceActuatorInfoDTO> qry = RequestAPIHelper.RequestServer<HttpReqEntity, GatewayDeviceActuatorInfoDTO>(apiPath, req);
+            var qry = SDK.GetActuatorInfo(txtGatewayTag.Text.Trim(), txtActuatorApiTag.Text.Trim(), txtToken.Text);
 
             Out(qry, apiPath);
         }
@@ -402,20 +364,10 @@ namespace NLECloudSDKSample
             if (!DeviceApiReqverify().IsSuccess())
                 return;
 
-            //1、先定义该API接口路径，可以从http://api.nlecloud.com/页面的得知
-            String apiPath = this.txtCameraListAPI.Text;
-
-            //2、根据该API接口 的请求参数中 得知需要创建个URI Parameters String类型参数，所以该参数直接跟在apiPath中
             String gatewayTag = txtGatewayTag.Text;
-            apiPath = apiPath.Replace("{gatewayTag}", gatewayTag);//将API地址中的{gatewayTag}替换成真实设备标识
+            String apiPath = this.txtCameraListAPI.Text.Replace("{gatewayTag}", gatewayTag);
 
-            //3、由于调用该API需要Token，所以我们定义了一个通用的对象HttpReqEntity，在AccessToken当成头部请求信息提交过去
-            HttpReqEntity req = new HttpReqEntity();
-            req.Method = HttpMethod.POST;
-            req.Headers.Add("AccessToken", txtToken.Text);
-
-            //4、定义该API接口返回的对象,由于是列表所以要用IEnumerable
-            ResultMsg<IEnumerable<GatewayDeviceCameraInfoDTO>> qry = RequestAPIHelper.RequestServer<HttpReqEntity, IEnumerable<GatewayDeviceCameraInfoDTO>>(apiPath, req);
+            var qry = SDK.GetCameraList(gatewayTag, txtToken.Text);
 
             Out(qry, apiPath);
 
@@ -437,7 +389,7 @@ namespace NLECloudSDKSample
 
             if (this.txtCameraApiTag.Text.Trim() == "")
             {
-                MessageBox.Show("请输入你在云平台上已添加的某个摄像头API标识！");
+                MessageBox.Show("请输入你在云平台上已添加的某个传感器API标识！");
                 return;
             }
 
@@ -446,15 +398,10 @@ namespace NLECloudSDKSample
 
             //2、根据该API接口 的请求参数中 得知需要创建两个URI Parameters String类型参数，所以该参数直接跟在apiPath中
             apiPath = apiPath.Replace("{gatewayTag}", txtGatewayTag.Text.Trim());//将API地址中的{gatewayTag}替换成真实设备标识
-            apiPath = apiPath.Replace("{apiTag}", txtCameraApiTag.Text.Trim());//将API地址中的{apiTag}替换成真实摄像头API标识
+            apiPath = apiPath.Replace("{apiTag}", txtCameraApiTag.Text.Trim());//将API地址中的{apiTag}替换成真实传感器API标识
 
-            //3、由于调用该API需要Token，所以我们定义了一个通用的对象HttpReqEntity，在AccessToken当成头部请求信息提交过去
-            HttpReqEntity req = new HttpReqEntity();
-            req.Method = HttpMethod.POST;
-            req.Headers.Add("AccessToken", txtToken.Text);
 
-            //4、定义该API接口返回的对象
-            ResultMsg<GatewayDeviceCameraInfoDTO> qry = RequestAPIHelper.RequestServer<HttpReqEntity, GatewayDeviceCameraInfoDTO>(apiPath, req);
+            var qry = SDK.GetCameraInfo(txtGatewayTag.Text.Trim(), txtCameraApiTag.Text.Trim(), txtToken.Text);
 
             Out(qry, apiPath);
         }
@@ -477,21 +424,12 @@ namespace NLECloudSDKSample
             if (!result.IsSuccess())
                 return;
 
-            //1、先定义该API接口路径，可以从http://api.nlecloud.com/页面的得知
-            String apiPath = this.txtOnOfflineAPI.Text;
+            String apiPath = this.txtOnOfflineAPI.Text.Replace("{gatewayTag}", result.Msg);//将API地址中的{gatewayTag}替换成真实设备标识
 
-            //2、根据该API接口 的请求参数中 得知需要创建两个URI Parameters String类型参数，所以该参数直接跟在apiPath中
-            apiPath = apiPath.Replace("{gatewayTag}", result.Msg);//将API地址中的{gatewayTag}替换成真实设备标识
-
-            //3、由于调用该API需要Token，所以我们定义了一个通用的对象HttpReqEntity，在AccessToken当成头部请求信息提交过去
-            HttpReqEntity req = new HttpReqEntity();
-            req.Method = HttpMethod.POST;
-            req.Headers.Add("AccessToken", txtToken.Text);
-
-            //4、定义该API接口返回的对象
-            ResultMsg<GatewayOnlineDataDTO> qry = RequestAPIHelper.RequestServer<HttpReqEntity, GatewayOnlineDataDTO>(apiPath, req);
+            var qry = SDK.GetGatewayOnOffLine(result.Msg, txtToken.Text);
 
             Out(qry, apiPath);
+
         }
 
         #endregion
@@ -509,34 +447,19 @@ namespace NLECloudSDKSample
             if (!result.IsSuccess())
                 return;
 
-            //1、先定义该API接口路径，可以从http://api.nlecloud.com/页面的得知
-            String apiPath = this.txtHistoryPagerOnOfflineAPI.Text;
+            String apiPath = this.txtHistoryPagerOnOfflineAPI.Text.Replace("{gatewayTag}", result.Msg);//将API地址中的{gatewayTag}替换成真实设备标识
 
-            //2、根据该API接口 的请求参数中 得知需要创建一个URI Parameters String类型参数，所以该参数直接跟在apiPath中
-            apiPath = apiPath.Replace("{gatewayTag}", result.Msg);//将API地址中的{gatewayTag}替换成真实设备标识
-            //2、同时得知也需要一个GatewayOnOfflineHistoryQryParas 的Body Parameters请求参数
-            //其中包含四个查询子属性StartDate、EndDate、PageIndex、PageSize
-            //根据自己自行定义
-            GatewayOnOfflineHistoryQryParas reqBody = new GatewayOnOfflineHistoryQryParas()
+            GatewayOnOfflineHistoryQryParas query = new GatewayOnOfflineHistoryQryParas()
             {
-                PageIndex = 1,//这里自定义当前要查询的页码数
-                PageSize = 20,//这里定义每页要查询的数量
-                StartDate = DateTime.Now.AddDays(-30),//这里定义从某个时间段开始查询，现在定义为30天前
-                EndDate = DateTime.Now,//这里定义查询到某个时间点结束，现在定义为当前时间
+                PageIndex = 1,
+                PageSize = 20,
+                StartDate = DateTime.Now.AddDays(-30).ToShortDateString(),
+                EndDate = DateTime.Now.ToShortDateString()
             };
-
-            //3、由于调用该API需要Token，所以我们定义了一个通用的对象HttpReqEntity，在AccessToken当成头部请求信息提交过去
-            HttpReqEntity req = new HttpReqEntity();
-            req.Method = HttpMethod.POST;
-            req.Headers.Add("AccessToken", txtToken.Text);
-
-            //这里跟之前设备TAB相关的接口不一样区别是，因为该接口要传递Body Parameters，所以把reqBody当包体数据赋给req
-            req.Datas = JsonFormatter.Serialize(reqBody);
-
-            //4、定义该API接口返回的对象
-            ResultMsg<ListPagerSet<GatewayOnlineRecordListDTO>> qry = RequestAPIHelper.RequestServer<HttpReqEntity, ListPagerSet<GatewayOnlineRecordListDTO>>(apiPath, req);
+            var qry = SDK.GetHistoryPagerOnOffline(result.Msg, query, txtToken.Text);
 
             Out(qry, apiPath);
+
         }
 
         #endregion
@@ -554,21 +477,12 @@ namespace NLECloudSDKSample
             if (!result.IsSuccess())
                 return;
 
-            //1、先定义该API接口路径，可以从http://api.nlecloud.com/页面的得知
-            String apiPath = this.txtStatusAPI.Text;
+            String apiPath = this.txtStatusAPI.Text.Replace("{gatewayTag}", result.Msg);//将API地址中的{gatewayTag}替换成真实设备标识
 
-            //2、根据该API接口 的请求参数中 得知需要创建两个URI Parameters String类型参数，所以该参数直接跟在apiPath中
-            apiPath = apiPath.Replace("{gatewayTag}", result.Msg);//将API地址中的{gatewayTag}替换成真实设备标识
-
-            //3、由于调用该API需要Token，所以我们定义了一个通用的对象HttpReqEntity，在AccessToken当成头部请求信息提交过去
-            HttpReqEntity req = new HttpReqEntity();
-            req.Method = HttpMethod.POST;
-            req.Headers.Add("AccessToken", txtToken.Text);
-
-            //4、定义该API接口返回的对象
-            ResultMsg<Boolean> qry = RequestAPIHelper.RequestServer<HttpReqEntity, Boolean>(apiPath, req);
+            var qry = SDK.GetGatewayStatus(result.Msg, txtToken.Text);
 
             Out(qry, apiPath);
+
         }
 
         #endregion
@@ -586,21 +500,12 @@ namespace NLECloudSDKSample
             if (!result.IsSuccess())
                 return;
 
-            //1、先定义该API接口路径，可以从http://api.nlecloud.com/页面的得知
-            String apiPath = this.txtNewestDatasAPI.Text;
+            String apiPath = this.txtNewestDatasAPI.Text.Replace("{gatewayTag}", result.Msg);//将API地址中的{gatewayTag}替换成真实设备标识
 
-            //2、根据该API接口 的请求参数中 得知需要创建两个URI Parameters String类型参数，所以该参数直接跟在apiPath中
-            apiPath = apiPath.Replace("{gatewayTag}", result.Msg);//将API地址中的{gatewayTag}替换成真实设备标识
-
-            //3、由于调用该API需要Token，所以我们定义了一个通用的对象HttpReqEntity，在AccessToken当成头部请求信息提交过去
-            HttpReqEntity req = new HttpReqEntity();
-            req.Method = HttpMethod.POST;
-            req.Headers.Add("AccessToken", txtToken.Text);
-
-            //4、定义该API接口返回的对象
-            ResultMsg<IEnumerable<GatewayDeviceDataDTO>> qry = RequestAPIHelper.RequestServer<HttpReqEntity, IEnumerable<GatewayDeviceDataDTO>>(apiPath, req);
+            var qry = SDK.GetNewestDatas(result.Msg, txtToken.Text);
 
             Out(qry, apiPath);
+
         }
 
         #endregion
@@ -625,22 +530,14 @@ namespace NLECloudSDKSample
                 return;
             }
 
-            //1、先定义该API接口路径，可以从http://api.nlecloud.com/页面的得知
             String apiPath = this.txtNewestDataAPI.Text;
-
-            //2、根据该API接口 的请求参数中 得知需要创建两个URI Parameters String类型参数，所以该参数直接跟在apiPath中
             apiPath = apiPath.Replace("{gatewayTag}", txtTab2GatewayTag.Text.Trim());//将API地址中的{gatewayTag}替换成真实设备标识
             apiPath = apiPath.Replace("{apiTag}", txtNewestDataApiTag.Text.Trim());//将API地址中的{apiTag}替换成真实传感器API标识
 
-            //3、由于调用该API需要Token，所以我们定义了一个通用的对象HttpReqEntity，在AccessToken当成头部请求信息提交过去
-            HttpReqEntity req = new HttpReqEntity();
-            req.Method = HttpMethod.POST;
-            req.Headers.Add("AccessToken", txtToken.Text);
-
-            //4、定义该API接口返回的对象
-            ResultMsg<GatewayDeviceDataDTO> qry = RequestAPIHelper.RequestServer<HttpReqEntity, GatewayDeviceDataDTO>(apiPath, req);
+            var qry = SDK.GetSensorNewestData(txtTab2GatewayTag.Text.Trim(),txtNewestDataApiTag.Text.Trim(), txtToken.Text);
 
             Out(qry, apiPath);
+
         }
 
         #endregion
@@ -663,29 +560,17 @@ namespace NLECloudSDKSample
                 return;
             }
 
-            //1、先定义该API接口路径，可以从http://api.nlecloud.com/页面的得知
             String apiPath = this.txtHistoryDataAPI.Text;
-
-            //2、根据该API接口 的请求参数中 得知需要创建两个URI Parameters String类型参数，所以该参数直接跟在apiPath中
             apiPath = apiPath.Replace("{gatewayTag}", txtTab2GatewayTag.Text.Trim());//将API地址中的{gatewayTag}替换成真实设备标识
             apiPath = apiPath.Replace("{apiTag}", txtHistoryDataApiTag.Text.Trim());//将API地址中的{apiTag}替换成真实传感器API标识
-            //2、同时得知也需要一个GatewayDeviceHistoryQryParas 的Body Parameters请求参数
-            //根据自己自行定义
-            GatewayDeviceHistoryQryParas reqBody = new GatewayDeviceHistoryQryParas()
+
+            GatewayDeviceHistoryQryParas query = new GatewayDeviceHistoryQryParas()
             {
-                Method = 2,//查询方式（1：XX分钟内 2：XX小时内 3：XX天内 4：XX周内 5：XX月内 6：按startDate与endDate指定日期查询）
-                TimeAgo = 24,//与Method配对使用表示"多少TimeAgo Method内"的数据，例：(Method=2,TimeAgo=30)表示30小时内的历史数据
+                Method = 2,
+                TimeAgo = 24,
             };
 
-            //3、由于调用该API需要Token，所以我们定义了一个通用的对象HttpReqEntity，在AccessToken当成头部请求信息提交过去
-            HttpReqEntity req = new HttpReqEntity();
-            req.Method = HttpMethod.POST;
-            req.Headers.Add("AccessToken", txtToken.Text);
-            //这里跟之前设备TAB相关的接口不一样区别是，因为该接口要传递Body Parameters，所以把reqBody当包体数据赋给req
-            req.Datas = JsonFormatter.Serialize(reqBody);
-
-            //4、定义该API接口返回的对象
-            ResultMsg<IEnumerable<GatewayDeviceChartDataDTO>> qry = RequestAPIHelper.RequestServer<HttpReqEntity, IEnumerable<GatewayDeviceChartDataDTO>>(apiPath, req);
+            var qry = SDK.GetSensorHistoryData(txtTab2GatewayTag.Text.Trim(), txtHistoryDataApiTag.Text.Trim(), query, txtToken.Text);
 
             Out(qry, apiPath);
         }
@@ -710,35 +595,22 @@ namespace NLECloudSDKSample
                 return;
             }
 
-            //1、先定义该API接口路径，可以从http://api.nlecloud.com/页面的得知
             String apiPath = this.txtHistoryPagerDataAPI.Text;
-
-            //2、根据该API接口 的请求参数中 得知需要创建一个URI Parameters String类型参数，所以该参数直接跟在apiPath中
             apiPath = apiPath.Replace("{gatewayTag}", txtTab2GatewayTag.Text.Trim());//将API地址中的{gatewayTag}替换成真实设备标识
             apiPath = apiPath.Replace("{apiTag}", txtHistoryPagerDataApiTag.Text.Trim());//将API地址中的{apiTag}替换成真实传感器API标识
-            //2、同时得知也需要一个GatewayDeviceHistoryPagerQryParas 的Body Parameters请求参数
-            //其中包含四个查询子属性StartDate、EndDate、PageIndex、PageSize
-            //根据自己自行定义
-            GatewayDeviceHistoryPagerQryParas reqBody = new GatewayDeviceHistoryPagerQryParas()
+
+            GatewayDeviceHistoryPagerQryParas query = new GatewayDeviceHistoryPagerQryParas()
             {
-                PageIndex = 1,//这里自定义当前要查询的页码数
-                PageSize = 20,//这里定义每页要查询的数量
-                StartDate = DateTime.Now.AddDays(-30),//这里定义从某个时间段开始查询，现在定义为30天前
-                EndDate = DateTime.Now,//这里定义查询到某个时间点结束，现在定义为当前时间
+                PageIndex = 1,
+                PageSize = 20,
+                StartDate = DateTime.Now.AddDays(-30).ToShortDateString(),
+                EndDate = DateTime.Now.ToShortDateString(),
             };
 
-            //3、由于调用该API需要Token，所以我们定义了一个通用的对象HttpReqEntity，在AccessToken当成头部请求信息提交过去
-            HttpReqEntity req = new HttpReqEntity();
-            req.Method = HttpMethod.POST;
-            req.Headers.Add("AccessToken", txtToken.Text);
-
-            //这里跟之前设备TAB相关的接口不一样区别是，因为该接口要传递Body Parameters，所以把reqBody当包体数据赋给req
-            req.Datas = JsonFormatter.Serialize(reqBody);
-
-            //4、定义该API接口返回的对象
-            ResultMsg<ListPagerSet<GatewayDeviceListDataDTO>> qry = RequestAPIHelper.RequestServer<HttpReqEntity, ListPagerSet<GatewayDeviceListDataDTO>>(apiPath, req);
+            var qry = SDK.GetSensorHistoryPagerData(txtTab2GatewayTag.Text.Trim(), txtHistoryPagerDataApiTag.Text.Trim(), query, txtToken.Text);
 
             Out(qry, apiPath);
+
         }
 
         #endregion
@@ -761,22 +633,14 @@ namespace NLECloudSDKSample
                 return;
             }
 
-            //1、先定义该API接口路径，可以从http://api.nlecloud.com/页面的得知
             String apiPath = this.txtActuatorNewestDataAPI.Text;
-
-            //2、根据该API接口 的请求参数中 得知需要创建两个URI Parameters String类型参数，所以该参数直接跟在apiPath中
             apiPath = apiPath.Replace("{gatewayTag}", txtTab2GatewayTag.Text.Trim());//将API地址中的{gatewayTag}替换成真实设备标识
             apiPath = apiPath.Replace("{apiTag}", txtActuatorNewestDataApiTag.Text.Trim());//将API地址中的{apiTag}替换成真实传感器API标识
 
-            //3、由于调用该API需要Token，所以我们定义了一个通用的对象HttpReqEntity，在AccessToken当成头部请求信息提交过去
-            HttpReqEntity req = new HttpReqEntity();
-            req.Method = HttpMethod.POST;
-            req.Headers.Add("AccessToken", txtToken.Text);
-
-            //4、定义该API接口返回的对象
-            ResultMsg<GatewayDeviceDataDTO> qry = RequestAPIHelper.RequestServer<HttpReqEntity, GatewayDeviceDataDTO>(apiPath, req);
+            var qry = SDK.GetActuatorNewestData(txtTab2GatewayTag.Text.Trim(), txtActuatorNewestDataApiTag.Text.Trim(), txtToken.Text);
 
             Out(qry, apiPath);
+
         }
 
         #endregion
@@ -799,32 +663,20 @@ namespace NLECloudSDKSample
                 return;
             }
 
-            //1、先定义该API接口路径，可以从http://api.nlecloud.com/页面的得知
             String apiPath = this.txtActuatorHistoryDataAPI.Text;
-
-            //2、根据该API接口 的请求参数中 得知需要创建两个URI Parameters String类型参数，所以该参数直接跟在apiPath中
             apiPath = apiPath.Replace("{gatewayTag}", txtTab2GatewayTag.Text.Trim());//将API地址中的{gatewayTag}替换成真实设备标识
             apiPath = apiPath.Replace("{apiTag}", txtActuatorHistoryDataApiTag.Text.Trim());//将API地址中的{apiTag}替换成真实传感器API标识
 
-            //2、同时得知也需要一个GatewayDeviceHistoryQryParas 的Body Parameters请求参数
-            //根据自己自行定义
-            GatewayDeviceHistoryQryParas reqBody = new GatewayDeviceHistoryQryParas()
+            GatewayDeviceHistoryQryParas query = new GatewayDeviceHistoryQryParas()
             {
-                Method = 2,//查询方式（1：XX分钟内 2：XX小时内 3：XX天内 4：XX周内 5：XX月内 6：按startDate与endDate指定日期查询）
-                TimeAgo = 24,//与Method配对使用表示"多少TimeAgo Method内"的数据，例：(Method=2,TimeAgo=30)表示30小时内的历史数据
+                Method = 2,
+                TimeAgo = 24,
             };
 
-            //3、由于调用该API需要Token，所以我们定义了一个通用的对象HttpReqEntity，在AccessToken当成头部请求信息提交过去
-            HttpReqEntity req = new HttpReqEntity();
-            req.Method = HttpMethod.POST;
-            req.Headers.Add("AccessToken", txtToken.Text);
-            //这里跟之前设备TAB相关的接口不一样区别是，因为该接口要传递Body Parameters，所以把reqBody当包体数据赋给req
-            req.Datas = JsonFormatter.Serialize(reqBody);
-
-            //4、定义该API接口返回的对象
-            ResultMsg<IEnumerable<GatewayDeviceChartDataDTO>> qry = RequestAPIHelper.RequestServer<HttpReqEntity, IEnumerable<GatewayDeviceChartDataDTO>>(apiPath, req);
+            var qry = SDK.GetActuatorHistoryData(txtTab2GatewayTag.Text.Trim(), txtActuatorHistoryDataApiTag.Text.Trim(), query, txtToken.Text);
 
             Out(qry, apiPath);
+
         }
 
         #endregion
@@ -847,35 +699,22 @@ namespace NLECloudSDKSample
                 return;
             }
 
-            //1、先定义该API接口路径，可以从http://api.nlecloud.com/页面的得知
             String apiPath = this.txtActuatorHistoryPagerDataAPI.Text;
-
-            //2、根据该API接口 的请求参数中 得知需要创建一个URI Parameters String类型参数，所以该参数直接跟在apiPath中
             apiPath = apiPath.Replace("{gatewayTag}", txtTab2GatewayTag.Text.Trim());//将API地址中的{gatewayTag}替换成真实设备标识
             apiPath = apiPath.Replace("{apiTag}", txtActuatorHistoryPagerDataApiTag.Text.Trim());//将API地址中的{apiTag}替换成真实传感器API标识
-            //2、同时得知也需要一个GatewayDeviceHistoryPagerQryParas 的Body Parameters请求参数
-            //其中包含四个查询子属性StartDate、EndDate、PageIndex、PageSize
-            //根据自己自行定义
-            GatewayDeviceHistoryPagerQryParas reqBody = new GatewayDeviceHistoryPagerQryParas()
+
+            GatewayDeviceHistoryPagerQryParas query = new GatewayDeviceHistoryPagerQryParas()
             {
-                PageIndex = 1,//这里自定义当前要查询的页码数
-                PageSize = 20,//这里定义每页要查询的数量
-                StartDate = DateTime.Now.AddDays(-30),//这里定义从某个时间段开始查询，现在定义为30天前
-                EndDate = DateTime.Now,//这里定义查询到某个时间点结束，现在定义为当前时间
+                PageIndex = 1,
+                PageSize = 20,
+                StartDate = DateTime.Now.AddDays(-30).ToShortDateString(),
+                EndDate = DateTime.Now.ToShortDateString(),
             };
 
-            //3、由于调用该API需要Token，所以我们定义了一个通用的对象HttpReqEntity，在AccessToken当成头部请求信息提交过去
-            HttpReqEntity req = new HttpReqEntity();
-            req.Method = HttpMethod.POST;
-            req.Headers.Add("AccessToken", txtToken.Text);
-
-            //这里跟之前设备TAB相关的接口不一样区别是，因为该接口要传递Body Parameters，所以把reqBody当包体数据赋给req
-            req.Datas = JsonFormatter.Serialize(reqBody);
-
-            //4、定义该API接口返回的对象
-            ResultMsg<ListPagerSet<GatewayDeviceListDataDTO>> qry = RequestAPIHelper.RequestServer<HttpReqEntity, ListPagerSet<GatewayDeviceListDataDTO>>(apiPath, req);
+            var qry = SDK.GetActuatorHistoryPagerData(txtTab2GatewayTag.Text.Trim(), txtActuatorHistoryPagerDataApiTag.Text.Trim(), query, txtToken.Text);
 
             Out(qry, apiPath);
+
         }
 
         #endregion
@@ -902,19 +741,10 @@ namespace NLECloudSDKSample
                 return;
             }
 
-            //1、先定义该API接口路径，可以从http://api.nlecloud.com/页面的得知
             String apiPath = this.txtProjectInfoAPI.Text;
-
-            //2、根据该API接口 的请求参数中 得知需要创建个URI Parameters String类型参数，所以该参数直接跟在apiPath中
             apiPath = apiPath.Replace("{tag}", txtProjectTag.Text.Trim());//将API地址中的{gatewayTag}替换成真实设备标识
 
-            //3、由于调用该API需要Token，所以我们定义了一个通用的对象HttpReqEntity，在AccessToken当成头部请求信息提交过去
-            HttpReqEntity req = new HttpReqEntity();
-            req.Method = HttpMethod.POST;
-            req.Headers.Add("AccessToken", txtToken.Text);
-
-            //4、定义该API接口返回的对象
-            ResultMsg<ProjectInfoDTO> qry = RequestAPIHelper.RequestServer<HttpReqEntity, ProjectInfoDTO>(apiPath, req);
+            var qry = SDK.GetProjectInfo(txtProjectTag.Text.Trim(), txtToken.Text);
 
             Out(qry, apiPath);
         }
@@ -946,6 +776,7 @@ namespace NLECloudSDKSample
                 return;
             }
 
+
             //1、先定义该API接口路径，可以从http://api.nlecloud.com/页面的得知
             String apiPath = this.txtControlAPI.Text;
 
@@ -954,13 +785,7 @@ namespace NLECloudSDKSample
             apiPath = apiPath.Replace("{apiTag}", txtControlApiTag.Text.Trim());//将API地址中的{apiTag}替换成真实设备apiTag
             apiPath = apiPath.Replace("{data}", txtControlData.Text.Trim());//将API地址中的{data}替换成要控制的值
 
-            //3、由于调用该API需要Token，所以我们定义了一个通用的对象HttpReqEntity，在AccessToken当成头部请求信息提交过去
-            HttpReqEntity req = new HttpReqEntity();
-            req.Method = HttpMethod.POST;
-            req.Headers.Add("AccessToken", txtToken.Text);
-
-            //4、定义该API接口返回的对象
-            ResultMsg<Result> qry = RequestAPIHelper.RequestServer<HttpReqEntity>(apiPath, req);
+            var qry = SDK.Control(txtTab5GatewayTag.Text.Trim(), txtControlApiTag.Text.Trim(), txtControlData.Text.Trim(), txtToken.Text);
 
             Out(qry, apiPath);
         }

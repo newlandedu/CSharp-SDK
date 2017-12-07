@@ -66,41 +66,12 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Common\ApplicationSettings.cs" />
-    <Compile Include="Model\AccountLoginDTO.cs" />
-    <Compile Include="Model\AccountLoginResultDTO.cs" />
-    <Compile Include="Common\JsonFormatter.cs" />
-    <Compile Include="Common\HttpMethod.cs" />
-    <Compile Include="Common\TimeoutTask.cs" />
-    <Compile Include="Common\HttpReqEntity.cs" />
-    <Compile Include="Common\HttpHelper.cs" />
-    <Compile Include="Common\HttpResEntity.cs" />
-    <Compile Include="Common\ResultMsg.cs" />
-    <Compile Include="Common\ResultStatus.cs" />
-    <Compile Include="Common\RequestAPIHelper.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Model\ApiPagingQueryBase.cs" />
-    <Compile Include="Model\GatewayDeviceHistoryQryParas.cs" />
-    <Compile Include="Model\GatewayOnlineRecordListDTO.cs" />
-    <Compile Include="Model\ProjectInfoDTO.cs" />
-    <Compile Include="Model\NLECloudApiDemo.cs" />
-    <Compile Include="Model\GatewayDeviceChartDataDTO.cs" />
-    <Compile Include="Model\GatewayDeviceDataDTO.cs" />
-    <Compile Include="Model\GatewayOnlineDataDTO.cs" />
-    <Compile Include="Model\GatewayDeviceActuatorInfoDTO.cs" />
-    <Compile Include="Model\GatewayDeviceCameraInfoDTO.cs" />
-    <Compile Include="Model\GatewayDeviceSensorInfoDTO.cs" />
-    <Compile Include="Model\GatewayDeviceInfoDTO.cs" />
-    <Compile Include="Model\GatewayInfoDTO.cs" />
-    <Compile Include="Model\Pager\PagerParameters\LibPagerParameters.cs" />
-    <Compile Include="Model\Pager\PagerSet\DataSetPagerSet.cs" />
-    <Compile Include="Model\Pager\PagerSet\ListPagerSet.cs" />
-    <Compile Include="Model\Pager\PagerSet\PagerSet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -126,6 +97,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NLECloudSDK\NLECloudSDK.csproj">
+      <Project>{0b6dd2c3-3322-469a-a272-fd744b05b7ee}</Project>
+      <Name>NLECloudSDK</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
