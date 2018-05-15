@@ -27,7 +27,7 @@ namespace NLECloudSDK
             if (method == HttpMethod.POST)
                 result = HttpHelper.Post(data, url);
             else
-                result = HttpHelper.Get(url);
+                result = HttpHelper.Http(url, data, null, method);
             return result;
         }
 
@@ -38,7 +38,7 @@ namespace NLECloudSDK
         /// <typeparam name="ResponseT"></typeparam>
         /// <param name="apiName"></param>
         /// <param name="data"></param>
-        /// <param name="responseTIsEntity">返回的ResponseT是实体</param>
+        /// <param name="responseTIsEntity">指定的ResponseT是实体,不是ResultMsgT"></param>
         /// <returns></returns>
         public static ResultMsg<ResponseT> RequestServer<RequestT, ResponseT>(String apiPath, RequestT data, bool responseTIsEntity = true)
         {
@@ -85,7 +85,8 @@ namespace NLECloudSDK
                         else
                         {
                             resultMsg = tmp;
-                            resultMsg.Msg = result.ResultObj;
+                            if (String.IsNullOrEmpty(resultMsg.Msg))
+                                resultMsg.Msg = result.ResultObj;
                         }
                     }
                 }

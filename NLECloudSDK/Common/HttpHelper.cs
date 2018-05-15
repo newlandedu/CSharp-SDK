@@ -64,7 +64,7 @@ namespace NLECloudSDK
                             request.Headers.Add(data.Headers);
 
                         Encoding encoding = data.Encoding == null ? Encoding.UTF8 : data.Encoding;
-                        if (data.Method == HttpMethod.POST)
+                        //if (data.Method != HttpMethod.GET)
                         {
                             if (!string.IsNullOrEmpty(data.Datas))
                             {

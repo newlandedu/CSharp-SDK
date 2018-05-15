@@ -1,4 +1,5 @@
 ﻿using NLECloudSDK;
+using NLECloudSDK.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -194,7 +195,7 @@ namespace NLECloudSDKSample
         {
             if (txtUserName.Text.Trim() == "" || this.txtPasswd.Password.Trim() == "")
             {
-                MessageBox.Show("请输入登录用户名和密码！");
+                MessageBox.Show("请输入登录用户名和密码!");
                 return;
             }
 
@@ -212,6 +213,37 @@ namespace NLECloudSDKSample
             if (qry.IsSuccess())
             {
                 txtToken.Text = qry.ResultObj.AccessToken;
+
+                //
+                HttpReqEntity req = new HttpReqEntity();
+                req.Method = HttpMethod.POST;
+                req.Headers.Add("AccessToken", txtToken.Text);
+
+                SensorDataListAddDTO data = new SensorDataListAddDTO()
+                {
+                    DeviceId = 164,
+                };
+                var aDatasDTO = new List<SensorDataAddDTO>();
+                SensorDataAddDTO bb = new SensorDataAddDTO() { Tag = "nl_displacement" };
+                aDatasDTO.Add(bb);
+                List<SensorDataPointDTO> cc = new List<SensorDataPointDTO>();
+                cc.Add(new SensorDataPointDTO() { Value = 23123123 });
+                cc.Add(new SensorDataPointDTO() { Value = 2222 });
+                bb.PointDTO = cc;
+
+                bb = new SensorDataAddDTO() { Tag = "nl_thermocouple" };
+                aDatasDTO.Add(bb);
+                cc = new List<SensorDataPointDTO>();
+                cc.Add(new SensorDataPointDTO() { Value = true });
+                cc.Add(new SensorDataPointDTO() { Value = false });
+                bb.PointDTO = cc;
+
+                data.DatasDTO = aDatasDTO;
+
+                req.Datas = JsonFormatter.Serialize(data);
+                var a = RequestAPIHelper.RequestServer<HttpReqEntity>("http://api0.nlecloud.com/v2/devices/164/Datas", req);
+
+                string sdf = a.Msg;
             }
         }
 
@@ -234,7 +266,13 @@ namespace NLECloudSDKSample
             String gatewayTag = txtGatewayTag.Text;
             String apiPath = this.txtGatewayInfoAPI.Text.Replace("{gatewayTag}", gatewayTag);
 
-            var qry = SDK.GetGatewayInfo(gatewayTag, txtToken.Text);
+            NLECloudAPI SDK = new NLECloudAPI(API_HOST);
+            AccountLoginDTO loginDTO = new AccountLoginDTO();
+            loginDTO.Account = txtUserName.Text.Trim(); //帐号为云平台注册的手机号或用户名等
+            loginDTO.Password = txtPasswd.Password.Trim();//密码为云平台注册的帐号密码
+            var qry = SDK.UserLogin(loginDTO);
+
+            var qry1 = SDK.GetGatewayInfo(gatewayTag, txtToken.Text);
 
             Out(qry, apiPath);
 
@@ -287,8 +325,8 @@ namespace NLECloudSDKSample
             String apiPath = this.txtSensorAPI.Text;
 
             //2、根据该API接口 的请求参数中 得知需要创建两个URI Parameters String类型参数，所以该参数直接跟在apiPath中
-            apiPath = apiPath.Replace("{gatewayTag}", txtGatewayTag.Text.Trim());//将API地址中的{gatewayTag}替换成真实设备标识
-            apiPath = apiPath.Replace("{apiTag}", txtSensorApiTag.Text.Trim());//将API地址中的{apiTag}替换成真实传感器API标识
+            apiPath = apiPath.Replace("{gatewayTag}", txtGatewayTag.Text.Trim());  //将API地址中的{gatewayTag}替换成真实设备标识
+            apiPath = apiPath.Replace("{apiTag}", txtSensorApiTag.Text.Trim());    //将API地址中的{apiTag}替换成真实传感器API标识
 
 
             var qry = SDK.GetSensorInfo(txtGatewayTag.Text.Trim(), txtSensorApiTag.Text.Trim(), txtToken.Text);
@@ -735,16 +773,16 @@ namespace NLECloudSDKSample
                 MessageBox.Show("请先进行用户登录以便获取Token！");
                 return;
             }
-            if (txtProjectTag.Text.Trim() == "")
+            if (txtProjectId.Text.Trim() == "")
             {
-                MessageBox.Show("请在‘项目标识’框输入你在云平台上已添加的某个项目标识！");
+                MessageBox.Show("请在‘项目ID’框输入你在云平台上已添加的某个项目ID！");
                 return;
             }
 
             String apiPath = this.txtProjectInfoAPI.Text;
-            apiPath = apiPath.Replace("{tag}", txtProjectTag.Text.Trim());//将API地址中的{gatewayTag}替换成真实设备标识
+            apiPath = apiPath.Replace("{tag}", txtProjectId.Text.Trim());//将API地址中的{projectid}替换成真实项目ID
 
-            var qry = SDK.GetProjectInfo(txtProjectTag.Text.Trim(), txtToken.Text);
+            var qry = SDK.GetProjectInfo(Convert.ToInt32(txtProjectId.Text.Trim()), txtToken.Text);
 
             Out(qry, apiPath);
         }

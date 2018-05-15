@@ -30,21 +30,4 @@ namespace NLECloudSDK
         /// </summary>
         public String EndDate { get; set; }
     }
-
-
-    /// <summary>
-    /// 网关历史分页在/离线状态查询参数
-    /// </summary>
-    public class GatewayOnOfflineHistoryQryParas : ApiPagingQueryBase
-    {
-
-    }
-
-    /// <summary>
-    /// 网关设备历史分页数据查询参数
-    /// </summary>
-    public class GatewayDeviceHistoryPagerQryParas : ApiPagingQueryBase
-    {
-
-    }
 }

@@ -5,7 +5,7 @@ VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLECloudSDK", "NLECloudSDK\NLECloudSDK.csproj", "{0B6DD2C3-3322-469A-A272-FD744B05B7EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLECloudSDKSample", "NLECloudSDKSample\NLECloudSDKSample.csproj", "{2F096F17-0FDA-4A19-972E-11B6B987D8C9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{3D48D431-FB28-4B04-BF4C-8857085C8E54}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,12 +17,15 @@ Global
 		{0B6DD2C3-3322-469A-A272-FD744B05B7EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B6DD2C3-3322-469A-A272-FD744B05B7EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B6DD2C3-3322-469A-A272-FD744B05B7EE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2F096F17-0FDA-4A19-972E-11B6B987D8C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2F096F17-0FDA-4A19-972E-11B6B987D8C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2F096F17-0FDA-4A19-972E-11B6B987D8C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2F096F17-0FDA-4A19-972E-11B6B987D8C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D48D431-FB28-4B04-BF4C-8857085C8E54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D48D431-FB28-4B04-BF4C-8857085C8E54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D48D431-FB28-4B04-BF4C-8857085C8E54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D48D431-FB28-4B04-BF4C-8857085C8E54}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A0D87B17-E188-49A7-9BCA-7DE2240151D6}
 	EndGlobalSection
 EndGlobal
