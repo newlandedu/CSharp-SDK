@@ -1,5 +1,0 @@
-E:\Develop\NewLandEducation\2015-008物联网云\Ｋ【软件】项目源代码\01_主线（V2）\04_SDK\CSharp-SDK\NLECloudSDK\bin\Release\NLECloudSDK.dll
-E:\Develop\NewLandEducation\2015-008物联网云\Ｋ【软件】项目源代码\01_主线（V2）\04_SDK\CSharp-SDK\NLECloudSDK\bin\Release\NLECloudSDK.pdb
-E:\Develop\NewLandEducation\2015-008物联网云\Ｋ【软件】项目源代码\01_主线（V2）\04_SDK\CSharp-SDK\NLECloudSDK\bin\Release\Newtonsoft.Json.dll
-E:\Develop\NewLandEducation\2015-008物联网云\Ｋ【软件】项目源代码\01_主线（V2）\04_SDK\CSharp-SDK\NLECloudSDK\obj\Release\NLECloudSDK.dll
-E:\Develop\NewLandEducation\2015-008物联网云\Ｋ【软件】项目源代码\01_主线（V2）\04_SDK\CSharp-SDK\NLECloudSDK\obj\Release\NLECloudSDK.pdb
