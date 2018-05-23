@@ -163,7 +163,7 @@ namespace Test
             //    {
             //        foreach (var device in listDevices)
             //        {
-            //            Console.WriteLine("DeviceName={0},在线状态:{1}", device.Name,device.IsOnline);
+            //            Console.WriteLine("DeviceName={0},在线状态:{1}", device.Name, device.IsOnline);
             //        }
             //    }
             //    else if (listDevices.Count == 0)
@@ -322,15 +322,15 @@ namespace Test
             #endregion
 
             #region ——命令API测试——
-            //ResultMsg<Result> opResult = tc.CmdDeviced();
-            //if (opResult.IsSuccess())
-            //{
-            //    Console.WriteLine("命令发送，操作成功");
-            //}
-            //else
-            //{
-            //    Console.WriteLine(opResult.Msg);
-            //}
+            ResultMsg<Result> opResult = tc.CmdDeviced();
+            if (opResult.IsSuccess())
+            {
+                Console.WriteLine("命令发送，操作成功");
+            }
+            else
+            {
+                Console.WriteLine(opResult.Msg);
+            }
             #endregion
 
             Console.ReadKey();

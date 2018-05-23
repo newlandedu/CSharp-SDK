@@ -55,9 +55,15 @@ namespace NLECloudSDK.Model
         }
 
         /// <summary>
-        /// 传感的最新值（有引号是字符串或枚举，无引号是整数型或浮点型，true|false是布尔值，索引数字是TypeAttrs枚举对应的索引值，其它为二进制型）
+        /// 获取传感数据时的解释：
+        /// 1）带引号为字符串或枚举；
+        /// 2）带引号且是Base64编码的为二进制（二进制型数据转JSON是以Base64编码成带引号字符串，记着反序列化成二进制字节）；
+        /// 3）无引号是整数型或浮点型；
+        /// 4）true|false是布尔值。
+        /// 新增传感数据时的解释：
+        /// 1）对于二进制型传感数据的新增，最大字节大小为 48 Byte
         /// </summary>
-        public virtual dynamic Value { get; set; }
+        public virtual Object Value { get; set; }
 
         /// <summary>
         /// 值最新上传时间（格式：YYYY-MM-DD HH:mm）

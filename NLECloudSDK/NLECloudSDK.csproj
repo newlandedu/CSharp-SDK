@@ -60,7 +60,7 @@
     <Compile Include="Model\ActuatorQueryData.cs" />
     <Compile Include="Model\ApiPagingQueryBase.cs" />
     <Compile Include="Model\CameraQueryData.cs" />
-    <Compile Include="Model\Class1.cs" />
+    <Compile Include="Model\SensorDataPointDTO.cs" />
     <Compile Include="Model\DatasFuzzyQryPagingParas.cs" />
     <Compile Include="Model\DeviceAddParas.cs" />
     <Compile Include="Model\DeviceBaseInfoDTO.cs" />

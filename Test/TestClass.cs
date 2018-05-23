@@ -45,7 +45,7 @@ namespace Test
 
         public bool UserLoginTest()
         {
-            AccountLoginDTO dto = new AccountLoginDTO() { Account = "18518518185", Password = "aaaaaa" };
+            AccountLoginDTO dto = new AccountLoginDTO() { Account = "18965562233", Password = "123456" };
             ResultMsg<AccountLoginResultDTO> opResult = SDK.UserLogin(dto);
             if (opResult.IsSuccess())
             {
@@ -111,13 +111,14 @@ namespace Test
         #endregion
 
         #region ——设备API测试——
+
         /// <summary>
         /// 批量查询设备最新数据
         /// </summary>
         /// <returns></returns>
         public ResultMsg<List<DeviceSensorDataDTO>> GetSensorsData()
         {
-            string devides = "6636";
+            string devides = "6633";
             ResultMsg<List<DeviceSensorDataDTO>> opResult = SDK.GetDeviceNewestDatas(devides,this.Token);
 
             return opResult;
@@ -141,7 +142,7 @@ namespace Test
         /// <returns></returns>
         public ResultMsg<DeviceInfoDTO> GetDeviceByDeviceId()
         {
-            int devides = 6636;
+            int devides = 6633;
             ResultMsg<DeviceInfoDTO> opResult = SDK.GetDeviceByDeviceId(devides, this.Token);
 
             return opResult;
@@ -155,6 +156,7 @@ namespace Test
         {
             DeviceFuzzyQryPagingParas devicesQuery = new DeviceFuzzyQryPagingParas()
             {
+                DeviceIds = "6633",
                 PageSize = 20,
                 StartDate = "2009-01-01",
                 EndDate = "2018-05-14",
@@ -229,8 +231,8 @@ namespace Test
         /// <returns></returns>
         public ResultMsg<SensorBaseInfoDTO> GetSensorOfDevice()
         {
-            int deviceId = 6636;
-            string DeviceTag = "temperatureSensor";
+            int deviceId = 6633;
+            string DeviceTag = "binary";
             ResultMsg<SensorBaseInfoDTO> opResult = SDK.GetSensorOfDevice(deviceId, DeviceTag, this.Token);
             return opResult;
         }
@@ -372,31 +374,29 @@ namespace Test
         #region ——新增传感数据——
         public ResultMsg<Result> AddDatasOfSensors()
         {
-            int deviceId = 6636;
+            int deviceId = 6633;
 
-            SensorDataPointDTO sensorDataPointDTO1 = new SensorDataPointDTO()
+            SensorDataAddDTO sensorData1 = new SensorDataAddDTO();
+            sensorData1.ApiTag = "temperature";
+            sensorData1.PointDTO = new List<SensorDataPointDTO>() 
             {
-                Value = 30
+                 new SensorDataPointDTO() { Value = 30 },
+                 new SensorDataPointDTO() { Value = 55 }
             };
-            SensorDataPointDTO sensorDataPointDTO2 = new SensorDataPointDTO()
+
+            SensorDataAddDTO sensorData2 = new SensorDataAddDTO();
+            sensorData1.ApiTag = "binary";
+            sensorData1.PointDTO = new List<SensorDataPointDTO>() 
             {
-                Value = 55
+                 new SensorDataPointDTO() { Value = System.Text.Encoding.UTF8.GetBytes("asdadasd") }
             };
-
-            List<SensorDataPointDTO> sensorDataPointDTOList = new List<SensorDataPointDTO>();
-            sensorDataPointDTOList.Add(sensorDataPointDTO1);
-            sensorDataPointDTOList.Add(sensorDataPointDTO2);
-
-            SensorDataAddDTO sensorDataAddDTO1 = new SensorDataAddDTO();
-            sensorDataAddDTO1.ApiTag = "temperatureSensor";
-            sensorDataAddDTO1.PointDTO = sensorDataPointDTOList;
-
-            List<SensorDataAddDTO> sensorDataAddDTOList = new List<SensorDataAddDTO>();
-            sensorDataAddDTOList.Add(sensorDataAddDTO1);
 
             SensorDataListAddBaseDTO s = new SensorDataListAddBaseDTO();
-            s.DatasDTO = sensorDataAddDTOList;
-
+            s.DatasDTO = new List<SensorDataAddDTO>() 
+            {
+                sensorData1,
+                sensorData2
+            };
 
 
             ResultMsg<Result> opResult = SDK.AddDatasOfSensors(s, deviceId, this.Token);
@@ -408,10 +408,10 @@ namespace Test
         #region ——查询传感数据——
         public ResultMsg<SensorDataInfoDTO> GetDatasOfSensors()
         {
-            int deviceid = 6636;
+            int deviceid = 6633;
             DatasFuzzyQryPagingParas data = new DatasFuzzyQryPagingParas()
             {
-                deviceId = 6636,
+                deviceId = 6633,
                 Method = 2,
                 TimeAgo = 30,
                 Sort = "DESC",
@@ -430,8 +430,8 @@ namespace Test
 
         public ResultMsg<Result> CmdDeviced()
         {
-            int deviceId = 6636;
-            string apiTag = "temperatureSensor";
+            int deviceId = 3010;
+            string apiTag = "nl_fan";
             int data = 1;
 
             ResultMsg<Result> opResult = SDK.CmdDeviced(deviceId,apiTag,data,this.Token);
