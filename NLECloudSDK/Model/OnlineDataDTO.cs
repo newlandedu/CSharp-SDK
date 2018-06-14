@@ -17,26 +17,30 @@ using System.Threading.Tasks;
 ************************************************************/
 namespace NLECloudSDK.Model
 {
+    /// <summary>
+    /// 设备在线数据
+    /// </summary>
     public class OnlineDataDTO
     {
         /// <summary>
         /// 设备ID
         /// </summary>
-        public int DeviceID { get; set; }
+        public virtual Int32 DeviceID { get; set; }
 
         /// <summary>
         /// 设备名称
         /// </summary>
-        public string Name { get; set; }
+        public virtual String Name { get; set; }
 
         /// <summary>
         /// 在线状态（true为在线，false为离线）
         /// </summary>
-        public Boolean IsOnline { get; set; }
+        public virtual Boolean IsOnline { get; set; }
 
         /// <summary>
         /// 最近上线IP
         /// </summary>
-        public string LastOnlineIP { get; set; }
+        public virtual String LastOnlineIP { get; set; }
+
     }
 }

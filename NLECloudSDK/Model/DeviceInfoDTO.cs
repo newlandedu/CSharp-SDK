@@ -17,72 +17,86 @@ using System.Threading.Tasks;
 ************************************************************/
 namespace NLECloudSDK.Model
 {
-    public class DeviceInfoDTO
+    /// <summary>
+    /// 设备基础信息
+    /// </summary>
+    public class DeviceBaseInfoDTO
     {
-        /// <summary>
-        /// 设备的传感器列表
-        /// </summary>
-        public List<SensorBaseInfoDTO> Sensors { get; set; }
-
         /// <summary>
         /// 设备ID
         /// </summary>
-        public int DeviceID { get; set; }
+        public virtual Int32 DeviceID { get; set; }
 
         /// <summary>
         /// 设备名称
         /// </summary>
-        public string Name { get; set; }
+        public virtual String Name { get; set; }
 
         /// <summary>
         /// 设备标识
         /// </summary>
-        public string Tag { get; set; }
+        public virtual String Tag { get; set; }
+
+        /// <summary>
+        /// 传输密钥
+        /// </summary>
+        public virtual String SecurityKey { get; set; }
 
         /// <summary>
         /// 项目ID
         /// </summary>
-        public int ProjectID { get; set; }
+        public virtual Int32 ProjectID { get; set; }
 
         /// <summary>
-        /// 协议类型 TCP/MQTT/HTTP 
+        /// 协议类型 TCP/MQTT/HTTP
         /// </summary>
-        public string Protocol { get; set; }
+        public virtual String Protocol { get; set; }
 
         /// <summary>
-        ///  在线情况 
+        /// 在线情况
         /// </summary>
         public Boolean IsOnline { get; set; }
 
         /// <summary>
-        /// 最后上线IP 
+        /// 最后上线IP
         /// </summary>
-        public string LastOnlineIP { get; set; }
+        public virtual String LastOnlineIP { get; set; }
 
         /// <summary>
         /// 最后上线时间（格式：YYYY-MM-DD HH:mm）
         /// </summary>
-        public string LastOnlineTime { get; set; }
+        public String LastOnlineTime { get; set; }
 
         /// <summary>
         /// 设备座标（格式：经度,维度）
         /// </summary>
-        public string Coordinate { get; set; }
+        public virtual String Coordinate { get; set; }
 
         /// <summary>
-        /// 创建时间（格式：YYYY-MM-DD HH:mm） 
+        /// 创建时间（格式：YYYY-MM-DD HH:mm）
         /// </summary>
-        public string CreateDate { get; set; }
+        public virtual String CreateDate { get; set; }
 
         /// <summary>
         /// 数据保密性（私有:false，分享:true）
         /// </summary>
-        public Boolean IsShare { get; set; }
+        public virtual Boolean IsShare { get; set; }
 
         /// <summary>
         /// 数据传输状态（可上报：true，不可上报：false）
         /// </summary>
-        public Boolean IsTrans { get; set; }
+        public virtual Boolean IsTrans { get; set; }
+    }
 
+
+    /// <summary>
+    /// 设备信息
+    /// </summary>
+    public class DeviceInfoDTO : DeviceBaseInfoDTO
+    {
+        /// <summary>
+        /// 设备的传感器列表
+        /// </summary>
+        public virtual IEnumerable<SensorBaseInfoDTO> Sensors { get; set; }
     }
 }

@@ -26,7 +26,7 @@ namespace NLECloudSDK
         #region -- 私有方法 -- 
 
         /// <summary>
-        /// PrimaryKeyVerify
+        /// 验证Id与Token
         /// </summary>
         /// <returns></returns>
         private Result PrimaryKeyVerify(Int32 Id, ref String txtToken)
@@ -49,6 +49,11 @@ namespace NLECloudSDK
             return result;
         }
 
+        /// <summary>
+        /// 验证Token
+        /// </summary>
+        /// <param name="txtToken"></param>
+        /// <returns></returns>
         private Result TokenVerify(ref String txtToken)
         {
             Result result = new Result();
@@ -65,7 +70,7 @@ namespace NLECloudSDK
         }
 
         /// <summary>
-        /// GatewayTagVerify
+        /// 验证设备标识与Token
         /// </summary>
         /// <returns></returns>
         private Result GatewayTagVerify(String txtGatewayTag , ref String txtToken)
@@ -89,7 +94,7 @@ namespace NLECloudSDK
         }
 
         /// <summary>
-        /// ApiTagVerify
+        /// 验证设备标识、传感标识名、Token
         /// </summary>
         /// <returns></returns>
         private Result ApiTagVerify( String txtGatewayTag , String txtApiTag , ref String txtToken)
@@ -146,10 +151,6 @@ namespace NLECloudSDK
             {
                 this.mToken = result.ResultObj.AccessToken;
             }
-            else
-            {
-                Console.WriteLine(result.Msg);
-            }
             return result;
         }
 
@@ -195,22 +196,19 @@ namespace NLECloudSDK
         /// <summary>
         /// 模糊查询项目
         /// </summary>
-        /// <param name="query"></param>
+        /// <param name="query">查询参数</param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public ResultMsg<ListPagerSet<ProjectInfoDTO>> GetProjectsInfo(ProjectFuzzyQryPagingParas queryData, String token = null)
+        public ResultMsg<ListPagerSet<ProjectInfoDTO>> GetProjects(ProjectFuzzyQryPagingParas query, String token = null)
         {
             var result = new ResultMsg<ListPagerSet<ProjectInfoDTO>>();
 
-            #region --验证--
-            //if (String.IsNullOrEmpty(txtToken))
             var vry = TokenVerify(ref token);
             if (!vry.IsSuccess())
             {
                 vry.CopyTo(result);
                 return result;
             }
-            #endregion
 
             //1、先定义该API接口路径，可以从http://api.nlecloud.com/页面的得知
             String apiPath = String.Format("{0}/{1}", mApiHost, NLECloudAPIUrl.ProjectsInfoUrl);
@@ -219,7 +217,7 @@ namespace NLECloudSDK
             //apiPath = apiPath.Replace("{projectId}", projectId.ToString());//将API地址中的{gatewayTag}替换成真实设备标识
 
             //2、Get请求，拼接querystring
-            apiPath += string.Format("?{0}&{1}","PageSize=" + queryData.PageSize,"StartDate=" + queryData.StartDate,"EndDate=" + queryData.EndDate,"PageIndex=" + queryData.PageIndex);
+            apiPath += string.Format("?{0}&{1}", "PageSize=" + query.PageSize, "StartDate=" + query.StartDate, "EndDate=" + query.EndDate, "PageIndex=" + query.PageIndex);
 
             //3、由于调用该API需要Token，所以我们定义了一个通用的对象HttpReqEntity，在AccessToken当成头部请求信息提交过去
             HttpReqEntity req = new HttpReqEntity();
@@ -236,12 +234,12 @@ namespace NLECloudSDK
         /// <summary>
         /// 查询项目所有设备的传感器
         /// </summary>
-        /// <param name="projectId"></param>
-        /// <param name="token"></param>
+        /// <param name="projectId">项目ID</param>
+        /// <param name="token">请求token</param>
         /// <returns></returns>
-        public ResultMsg<List<SensorBaseInfoDTO>> GetAllSensorsByProject(Int32 projectId,string token = null)
+        public ResultMsg<IEnumerable<SensorBaseInfoDTO>> GetProjectSensors(Int32 projectId, String token = null)
         {
-            var result = new ResultMsg<List<SensorBaseInfoDTO>>();
+            var result = new ResultMsg<IEnumerable<SensorBaseInfoDTO>>();
 
             //验证
             var vry = PrimaryKeyVerify(projectId, ref token);
@@ -263,7 +261,7 @@ namespace NLECloudSDK
             req.Headers.Add("AccessToken", token);
 
             //4、定义该API接口返回的对象
-            result = RequestAPIHelper.RequestServer<HttpReqEntity, List<SensorBaseInfoDTO>>(apiPath, req);
+            result = RequestAPIHelper.RequestServer<HttpReqEntity, IEnumerable<SensorBaseInfoDTO>>(apiPath, req);
 
             return result;
         }
@@ -278,17 +276,16 @@ namespace NLECloudSDK
         /// <param name="devids">设备ID用逗号隔开, 限制100个设备 </param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public ResultMsg<List<DeviceSensorDataDTO>> GetDeviceNewestDatas(string devids,string token = null)
+        public ResultMsg<IEnumerable<DeviceSensorDataDTO>> GetDevicesDatas(String devids, String token = null)
         {
-            var result = new ResultMsg<List<DeviceSensorDataDTO>>();
+            var result = new ResultMsg<IEnumerable<DeviceSensorDataDTO>>();
 
-            //验证
-            //var vry = PrimaryKeyVerify(projectId, ref token);
-            //if (!vry.IsSuccess())
-            //{
-            //    vry.CopyTo(result);
-            //    return result;
-            //}
+            var vry = TokenVerify( ref token);
+            if (!vry.IsSuccess())
+            {
+                vry.CopyTo(result);
+                return result;
+            }
 
             //1、先定义该API接口路径，可以从http://api.nlecloud.com/页面的得知
             String apiPath = String.Format("{0}/{1}", mApiHost, NLECloudAPIUrl.DevicesDatasUrl);
@@ -302,20 +299,20 @@ namespace NLECloudSDK
             req.Headers.Add("AccessToken", token);
 
             //4、定义该API接口返回的对象
-            result = RequestAPIHelper.RequestServer<HttpReqEntity, List<DeviceSensorDataDTO>>(apiPath, req);
-            
-            if(result.IsSuccess() && result.ResultObj != null)
+            result = RequestAPIHelper.RequestServer<HttpReqEntity, IEnumerable<DeviceSensorDataDTO>>(apiPath, req);
+
+            if (result.IsSuccess() && result.ResultObj != null)
             {
-                result.ResultObj.ForEach(p => 
+                foreach (DeviceSensorDataDTO p in result.ResultObj)
                 {
                     if (p.Datas != null)
                     {
-                        p.Datas.ForEach(w =>
+                        foreach (SensorDataDTO w in p.Datas)
                         {
                             w.Value = ValueConvertToByteAry(w.Value);
-                        });
+                        }
                     }
-                });
+                }
             }
 
             return result;
@@ -327,31 +324,30 @@ namespace NLECloudSDK
         /// <param name="devids"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public ResultMsg<List<OnlineDataDTO>> GetDevicesStatus(string devids,string token=null)
+        public ResultMsg<IEnumerable<OnlineDataDTO>> GetDevicesStatus(String devids, String token = null)
         {
-            var result = new ResultMsg<List<OnlineDataDTO>>();
+            var result = new ResultMsg<IEnumerable<OnlineDataDTO>>();
 
-            //验证
-            //var vry = PrimaryKeyVerify(projectId, ref token);
-            //if (!vry.IsSuccess())
-            //{
-            //    vry.CopyTo(result);
-            //    return result;
-            //}
+            var vry = TokenVerify(ref token);
+            if (!vry.IsSuccess())
+            {
+                vry.CopyTo(result);
+                return result;
+            }
 
             //1、先定义该API接口路径，可以从http://api.nlecloud.com/页面的得知
             String apiPath = String.Format("{0}/{1}", mApiHost, NLECloudAPIUrl.DevicesStatusUrl);
 
             //2、根据该API接口的请求参数中 得知需要创建个URI Parameters String类型参数，所以该参数直接跟在apiPath中
             //apiPath = apiPath.Replace("{projectId}", projectId.ToString());//将API地址中的{projectid}替换成真实项目ID
-            apiPath += string.Format("?{0}","devids=" + devids);
+            apiPath += string.Format("?{0}", "devids=" + devids);
             //3、由于调用该API需要Token，所以我们定义了一个通用的对象HttpReqEntity，在AccessToken当成头部请求信息提交过去
             HttpReqEntity req = new HttpReqEntity();
             req.Method = HttpMethod.GET;
             req.Headers.Add("AccessToken", token);
 
             //4、定义该API接口返回的对象
-            result = RequestAPIHelper.RequestServer<HttpReqEntity, List<OnlineDataDTO>>(apiPath, req);
+            result = RequestAPIHelper.RequestServer<HttpReqEntity, IEnumerable<OnlineDataDTO>>(apiPath, req);
 
             return result;
         }
@@ -359,10 +355,10 @@ namespace NLECloudSDK
         /// <summary>
         /// 查询单个设备
         /// </summary>
-        /// <param name="deviceId"></param>
+        /// <param name="deviceId">设备ID</param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public ResultMsg<DeviceInfoDTO> GetDeviceByDeviceId(int deviceId,string token = null)
+        public ResultMsg<DeviceInfoDTO> GetDeviceInfo(Int32 deviceId, String token = null)
         {
             var result = new ResultMsg<DeviceInfoDTO>();
 
@@ -389,10 +385,10 @@ namespace NLECloudSDK
             result = RequestAPIHelper.RequestServer<HttpReqEntity, DeviceInfoDTO>(apiPath, req);
             if (result.IsSuccess() && result.ResultObj != null && result.ResultObj.Sensors != null)
             {
-                result.ResultObj.Sensors.ForEach(w => 
+                foreach(SensorBaseInfoDTO w in result.ResultObj.Sensors)
                 {
                     w.Value = ValueConvertToByteAry(w.Value);
-                });
+                }
             }
 
             return result;
@@ -401,28 +397,26 @@ namespace NLECloudSDK
         /// <summary>
         /// 模糊查询设备
         /// </summary>
-        /// <param name="query"></param>
+        /// <param name="query">查询参数</param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public ResultMsg<ListPagerSet<DeviceBaseInfoDTO>> GetDevices(DeviceFuzzyQryPagingParas queryData, string token = null)
+        public ResultMsg<ListPagerSet<DeviceBaseInfoDTO>> GetDevices(DeviceFuzzyQryPagingParas query, String token = null)
         {
             var result = new ResultMsg<ListPagerSet<DeviceBaseInfoDTO>>();
 
-            #region --ToUse--
-            //if (String.IsNullOrEmpty(txtToken))
-            //if (!vry.IsSuccess())
-            //{
-            //    vry.CopyTo(result);
-            //    return result;
-            //} 
-            #endregion
+            var vry = TokenVerify( ref token);
+            if (!vry.IsSuccess())
+            {
+                vry.CopyTo(result);
+                return result;
+            }
 
             //1、先定义该API接口路径，可以从http://api.nlecloud.com/页面的得知
             String apiPath = String.Format("{0}/{1}", mApiHost, NLECloudAPIUrl.Devices);
 
             //2、根据该API接口 的请求参数中 得知需要创建个URI Parameters String类型参数，所以该参数直接跟在apiPath中
             //apiPath = apiPath.Replace("{projectId}", projectId.ToString());//将API地址中的{gatewayTag}替换成真实设备标识
-            apiPath += string.Format("?{0}&{1}", "PageSize=" + queryData.PageSize, "StartDate=" + queryData.StartDate, "EndDate=" + queryData.EndDate, "PageIndex=" + queryData.PageIndex);
+            apiPath += string.Format("?{0}&{1}", "PageSize=" + query.PageSize, "StartDate=" + query.StartDate, "EndDate=" + query.EndDate, "PageIndex=" + query.PageIndex);
             //3、由于调用该API需要Token，所以我们定义了一个通用的对象HttpReqEntity，在AccessToken当成头部请求信息提交过去
             HttpReqEntity req = new HttpReqEntity();
             req.Method = HttpMethod.GET;
@@ -437,21 +431,19 @@ namespace NLECloudSDK
         /// <summary>
         /// 添加一个新设备
         /// </summary>
-        /// <param name="para"></param>
+        /// <param name="device">提交数据</param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public ResultMsg<int> AddDevice(DeviceAddParas para,string token = null)
+        public ResultMsg<Int32> AddDevice(DeviceAddUpdateDTO device, String token = null)
         {
-            var result = new ResultMsg<int>();
+            var result = new ResultMsg<Int32>();
 
-            #region --ToUse--
-            //if (String.IsNullOrEmpty(txtToken))
-            //if (!vry.IsSuccess())
-            //{
-            //    vry.CopyTo(result);
-            //    return result;
-            //} 
-            #endregion
+            var vry = TokenVerify(ref token);
+            if (!vry.IsSuccess())
+            {
+                vry.CopyTo(result);
+                return result;
+            }
 
             //1、先定义该API接口路径，可以从http://api.nlecloud.com/页面的得知
             String apiPath = String.Format("{0}/{1}", mApiHost, NLECloudAPIUrl.Devices);
@@ -462,11 +454,11 @@ namespace NLECloudSDK
             //3、由于调用该API需要Token，所以我们定义了一个通用的对象HttpReqEntity，在AccessToken当成头部请求信息提交过去
             HttpReqEntity req = new HttpReqEntity();
             req.Method = HttpMethod.POST;
-            req.Datas = JsonFormatter.Serialize(para);
+            req.Datas = JsonFormatter.Serialize(device);
             req.Headers.Add("AccessToken", token);
 
             //4、定义该API接口返回的对象
-            result = RequestAPIHelper.RequestServer<HttpReqEntity, int>(apiPath, req);
+            result = RequestAPIHelper.RequestServer<HttpReqEntity, Int32>(apiPath, req);
 
             return result;       
 
@@ -475,13 +467,13 @@ namespace NLECloudSDK
         /// <summary>
         /// 更新某个设备
         /// </summary>
-        /// <param name="para"></param>
-        /// <param name="deviceId"></param>
+        /// <param name="device">更新数据</param>
+        /// <param name="deviceId">设备ID</param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public ResultMsg<Result> UpdateDeviceByDeviceId(DeviceAddParas para,int deviceId,string token = null)
+        public Result UpdateDevice(Int32 deviceId, DeviceAddUpdateDTO device, String token = null)
         {
-            var result = new ResultMsg<Result>();
+            var result = new Result();
 
             //验证
             var vry = PrimaryKeyVerify(deviceId, ref token);
@@ -500,7 +492,7 @@ namespace NLECloudSDK
             //3、由于调用该API需要Token，所以我们定义了一个通用的对象HttpReqEntity，在AccessToken当成头部请求信息提交过去
             HttpReqEntity req = new HttpReqEntity();
             req.Method = HttpMethod.PUT;
-            req.Datas = JsonFormatter.Serialize(para);
+            req.Datas = JsonFormatter.Serialize(device);
             req.Headers.Add("AccessToken", token);
 
             //4、定义该API接口返回的对象
@@ -512,12 +504,12 @@ namespace NLECloudSDK
         /// <summary>
         /// 删除某个设备
         /// </summary>
-        /// <param name="deviceId"></param>
+        /// <param name="deviceId">设备ID</param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public ResultMsg<Result> DeleteDeviceByDeviceId(int deviceId,string token = null)
+        public Result DeleteDevice(Int32 deviceId, String token = null)
         {
-            var result = new ResultMsg<Result>();
+            var result = new Result();
 
             //验证
             var vry = PrimaryKeyVerify(deviceId, ref token);
@@ -543,18 +535,19 @@ namespace NLECloudSDK
 
             return result;
         }
+
         #endregion
 
         #region -- 设备传感器API --
- 
+
         /// <summary>
         /// 查询单个传感器
         /// </summary>
-        /// <param name="deviceId"></param>
-        /// <param name="apiTag"></param>
+        /// <param name="deviceId">设备ID</param>
+        /// <param name="apiTag">传感标识名</param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public ResultMsg<SensorBaseInfoDTO> GetSensorOfDevice(int deviceId,string apiTag,string token = null)
+        public ResultMsg<SensorBaseInfoDTO> GetSensorInfo(Int32 deviceId, String apiTag, String token = null)
         {
             var result = new ResultMsg<SensorBaseInfoDTO>();
 
@@ -570,7 +563,7 @@ namespace NLECloudSDK
             String apiPath = String.Format("{0}/{1}", mApiHost, NLECloudAPIUrl.SensorOfDeviceUrl);
 
             //2、根据该API接口的请求参数中 得知需要创建个URI Parameters String类型参数，所以该参数直接跟在apiPath中
-            apiPath = apiPath.Replace("{deviceid}", deviceId.ToString()).Replace("{apitag}",apiTag) ;//将API地址中的{projectid}替换成真实项目ID
+            apiPath = apiPath.Replace("{deviceid}", deviceId.ToString()).Replace("{apitag}", apiTag);//将API地址中的{projectid}替换成真实项目ID
 
             //3、由于调用该API需要Token，所以我们定义了一个通用的对象HttpReqEntity，在AccessToken当成头部请求信息提交过去
             HttpReqEntity req = new HttpReqEntity();
@@ -591,12 +584,13 @@ namespace NLECloudSDK
         /// <summary>
         /// 模糊查询传感器
         /// </summary>
-        /// <param name="deviceId"></param>
+        /// <param name="deviceId">设备ID</param>
+        /// <param name="apiTags">传感标识名</param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public ResultMsg<List<SensorBaseInfoDTO>> GetSensorsOfDevice(int deviceId, string token = null,string apiTags = null)
+        public ResultMsg<IEnumerable<SensorBaseInfoDTO>> GetSensors(Int32 deviceId, String apiTags = "", String token = null)
         {
-            var result = new ResultMsg<List<SensorBaseInfoDTO>>();
+            var result = new ResultMsg<IEnumerable<SensorBaseInfoDTO>>();
 
             //验证
             var vry = PrimaryKeyVerify(deviceId, ref token);
@@ -618,15 +612,14 @@ namespace NLECloudSDK
             req.Headers.Add("AccessToken", token);
 
             //4、定义该API接口返回的对象
-            result = RequestAPIHelper.RequestServer<HttpReqEntity, List<SensorBaseInfoDTO>>(apiPath, req);
+            result = RequestAPIHelper.RequestServer<HttpReqEntity, IEnumerable<SensorBaseInfoDTO>>(apiPath, req);
 
             if (result.IsSuccess() && result.ResultObj != null)
             {
-                result.ResultObj.ForEach(w => 
+                foreach(SensorBaseInfoDTO w in result.ResultObj)
                 {
                     ValueConvertToByteAry(w.Value);
-                });
-                
+                }
             }
 
             return result;
@@ -635,10 +628,15 @@ namespace NLECloudSDK
         /// <summary>
         /// 添加一个新的传感器
         /// </summary>
-        /// <param name="deviceId"></param>
+        /// <param name="deviceId">设备ID</param>
+        /// <param name="sensor">
+        ///     传感器：为SensorAddUpdate对象时
+        ///     执行器：为ActuatorAddUpdate对象时
+        ///     摄像头：为CameraAddUpdate对象时
+        /// </param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public ResultMsg<int> AddSensorOfDevice(SensorBaseQueryData sensor,int deviceId,string token = null)
+        public ResultMsg<Int32> AddSensor<T>(Int32 deviceId , T sensor,String token = null) where T : SensorAddUpdateBase, new()
         {
             var result = new ResultMsg<int>();
 
@@ -671,11 +669,16 @@ namespace NLECloudSDK
         /// <summary>
         /// 更新某个传感器
         /// </summary>
-        /// <param name="deviceId"></param>
-        /// <param name="apiTag"></param>
+        /// <param name="deviceId">设备ID</param>
+        /// <param name="apiTag">传感标识名</param>
+        /// <param name="sensor">
+        ///     传感器：为SensorAddUpdate对象时
+        ///     执行器：为ActuatorAddUpdate对象时
+        ///     摄像头：为CameraAddUpdate对象时
+        /// </param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public ResultMsg<Result> UpdateSensorOfDevice(SensorBaseQueryData sensor,int deviceId,string apiTag,string token = null)
+        public Result UpdateSensor<T>(Int32 deviceId, String apiTag, T sensor, String token = null) where T : SensorAddUpdateBase, new()
         {
             var result = new ResultMsg<Result>();
 
@@ -708,13 +711,13 @@ namespace NLECloudSDK
         /// <summary>
         /// 删除某个传感器
         /// </summary>
-        /// <param name="deviceId"></param>
-        /// <param name="apiTag"></param>
+        /// <param name="deviceId">设备ID</param>
+        /// <param name="apiTag">传感标识名</param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public ResultMsg<Result> DeleteSensorOfDevice(int deviceId, string apiTag, string token = null)
+        public Result DeleteSensor(Int32 deviceId, String apiTag, String token = null)
         {
-            var result = new ResultMsg<Result>();
+            var result = new Result();
 
             //验证
             var vry = PrimaryKeyVerify(deviceId, ref token);
@@ -748,11 +751,13 @@ namespace NLECloudSDK
         /// <summary>
         /// 新增传感数据
         /// </summary>
-        /// <param name="deviceId"></param>
+        /// <param name="deviceId">设备ID</param>
+        /// <param name="data">传感数据</param>
+        /// <param name="token"></param>
         /// <returns></returns>
-        public ResultMsg<Result> AddDatasOfSensors(SensorDataListAddBaseDTO data, int deviceId,string token = null)
+        public Result AddSensorDatas(Int32 deviceId, SensorDataListAddDTO data, String token = null)
         {
-            var result = new ResultMsg<Result>();
+            var result = new Result();
 
             //验证
             var vry = PrimaryKeyVerify(deviceId, ref token);
@@ -784,25 +789,23 @@ namespace NLECloudSDK
         /// 查询传感数据
         /// </summary>
         /// <returns></returns>
-        public ResultMsg<SensorDataInfoDTO> GetDatasOfSensors(DatasFuzzyQryPagingParas query,string token = null)
+        public ResultMsg<SensorDataInfoDTO> GetSensorDatas(SensorDataFuzzyQryPagingParas query,string token = null)
         {
             var result = new ResultMsg<SensorDataInfoDTO>();
 
-            #region --ToUse--
-            //if (String.IsNullOrEmpty(txtToken))
-            //if (!vry.IsSuccess())
-            //{
-            //    vry.CopyTo(result);
-            //    return result;
-            //} 
-            #endregion
+            var vry = TokenVerify(ref token);
+            if (!vry.IsSuccess())
+            {
+                vry.CopyTo(result);
+                return result;
+            }
 
             //1、先定义该API接口路径，可以从http://api.nlecloud.com/页面的得知
             String apiPath = String.Format("{0}/{1}", mApiHost, NLECloudAPIUrl.DatasOfSensorUrl);
 
             //2、根据该API接口 的请求参数中 得知需要创建个URI Parameters String类型参数，所以该参数直接跟在apiPath中
-            apiPath = apiPath.Replace("{deviceid}", query.deviceId.ToString());//将API地址中的{gatewayTag}替换成真实设备标识
-            apiPath += string.Format("?{0}&{1}&{2}&{3}&{4}&{5}", "deviceId=" + query.deviceId, "Method=" + query.Method, "TimeAgo=" + query.TimeAgo, "Sort=" + query.Sort, "PageSize=" + query.PageSize, "PageIndex=" + query.PageIndex);
+            apiPath = apiPath.Replace("{deviceid}", query.DeviceID.ToString());//将API地址中的{gatewayTag}替换成真实设备标识
+            apiPath += string.Format("?{0}&{1}&{2}&{3}&{4}&{5}", "deviceId=" + query.DeviceID, "Method=" + query.Method, "TimeAgo=" + query.TimeAgo, "Sort=" + query.Sort, "PageSize=" + query.PageSize, "PageIndex=" + query.PageIndex);
             //3、由于调用该API需要Token，所以我们定义了一个通用的对象HttpReqEntity，在AccessToken当成头部请求信息提交过去
             HttpReqEntity req = new HttpReqEntity();
             req.Method = HttpMethod.GET;
@@ -813,7 +816,7 @@ namespace NLECloudSDK
 
             if (result.IsSuccess() && result.ResultObj != null && result.ResultObj.DataPoints != null)
             {
-                result.ResultObj.DataPoints.ForEach(p =>
+                foreach(SensorDataAddDTO p in result.ResultObj.DataPoints)
                 {
                     if (p.PointDTO != null)
                     {
@@ -822,7 +825,7 @@ namespace NLECloudSDK
                             ValueConvertToByteAry(w.Value);
                         }
                     }
-                });
+                }
             }
 
             return result;
@@ -834,22 +837,25 @@ namespace NLECloudSDK
         /// <summary>
         /// 发送命令
         /// </summary>
-        /// <param name="deviceId"></param>
-        /// <param name="apiTag"></param>
-        /// <param name="data"></param>
+        /// <param name="deviceId">设备ID</param>
+        /// <param name="apiTag">传感标识名</param>
+        /// <param name="data">
+        /// 开关类：开=1，关=0，暂停=2 
+        /// 家居类：调光灯亮度=0~254，RGB灯色度=2~239，窗帘、卷闸门、幕布打开百分比=3%~100%，红外指令=1(on)2(off)
+        /// 其它：integer/float/Json/String类型值
+        /// </param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public ResultMsg<Result> CmdDeviced(int deviceId,string apiTag,object data,string token = null)
+        public Result Cmds(Int32 deviceId, String apiTag, Object data, String token = null)
         {
-            var result = new ResultMsg<Result>();
+            var result = new Result();
 
-            //验证
-            //var vry = PrimaryKeyVerify(deviceId, ref token);
-            //if (!vry.IsSuccess())
-            //{
-            //    vry.CopyTo(result);
-            //    return result;
-            //}
+            var vry = PrimaryKeyVerify(deviceId , ref token);
+            if (!vry.IsSuccess())
+            {
+                vry.CopyTo(result);
+                return result;
+            }
 
             //1、先定义该API接口路径，可以从http://api.nlecloud.com/页面的得知
             String apiPath = String.Format("{0}/{1}", mApiHost, NLECloudAPIUrl.CmdUrl);

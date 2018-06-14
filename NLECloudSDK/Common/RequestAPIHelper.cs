@@ -11,6 +11,9 @@ namespace NLECloudSDK
     /// </summary>
     public class RequestAPIHelper
     {
+        private static Type ResultMsgT = typeof(ResultMsg);
+        private static Type ResultT = typeof(Result);
+
         /// <summary>
         /// 服务接口请求
         /// </summary>
@@ -36,11 +39,10 @@ namespace NLECloudSDK
         /// </summary>
         /// <typeparam name="RequestT"></typeparam>
         /// <typeparam name="ResponseT"></typeparam>
-        /// <param name="apiName"></param>
+        /// <param name="apiPath"></param>
         /// <param name="data"></param>
-        /// <param name="responseTIsEntity">指定的ResponseT是实体,不是ResultMsgT"></param>
         /// <returns></returns>
-        public static ResultMsg<ResponseT> RequestServer<RequestT, ResponseT>(String apiPath, RequestT data, bool responseTIsEntity = true)
+        public static ResultMsg<ResponseT> RequestServer<RequestT, ResponseT>(String apiPath, RequestT data)
         {
             ResultMsg<ResponseT> resultMsg = new ResultMsg<ResponseT>();
 
@@ -62,19 +64,15 @@ namespace NLECloudSDK
             {
                 if (!String.IsNullOrEmpty(result.ResultObj))
                 {
-                    //返回服务器原始对象
-                    if (!responseTIsEntity)
+                    Type type = typeof(ResponseT);
+                    if(type == ResultMsgT || type == ResultT)
                     {
                         ResponseT tmp = JsonFormatter.Deserialize<ResponseT>(result.ResultObj);
                         if (tmp == null)
                             resultMsg.SetFailure("数据请求错误,返回对象为空!");
                         else
                         {
-                            ResultMsg<ResponseT> serverResult = tmp as ResultMsg<ResponseT>;
-                            if (serverResult != null)
-                                serverResult.CopyTo<ResponseT>(resultMsg);
-                            else
-                                resultMsg.SetFailure("解析JSON数据失败,返回对象不正确!");
+                            resultMsg.ResultObj = tmp;
                         }
                     }
                     else
@@ -83,11 +81,7 @@ namespace NLECloudSDK
                         if (tmp == null)
                             resultMsg.SetFailure("数据请求错误,返回对象为空!");
                         else
-                        {
                             resultMsg = tmp;
-                            if (String.IsNullOrEmpty(resultMsg.Msg))
-                                resultMsg.Msg = result.ResultObj;
-                        }
                     }
                 }
                 else
@@ -98,67 +92,28 @@ namespace NLECloudSDK
 
             return resultMsg;
         }
-
-        /// <summary>
-        /// 服务接口请求
-        /// </summary>
-        /// <typeparam name="ResponseT"></typeparam>
-        /// <param name="apiName"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public static ResultMsg<ResponseT> RequestServer<ResponseT>(String apiPath, bool responseTIsEntity = true)
-        {
-            return RequestServer<Nullable<int>, ResponseT>(apiPath, null, true);
-        }
-
 
         /// <summary>
         /// 服务接口请求
         /// </summary>
         /// <typeparam name="RequestT"></typeparam>
-        /// <typeparam name="ResponseT"></typeparam>
-        /// <param name="apiName"></param>
+        /// <param name="apiPath"></param>
         /// <param name="data"></param>
-        /// <param name="responseTIsEntity">返回的ResponseT是实体</param>
         /// <returns></returns>
-        public static ResultMsg<Result> RequestServer<RequestT>(String apiPath, RequestT data)
+        public static Result RequestServer<RequestT>(String apiPath, RequestT data)
         {
-            ResultMsg<Result> resultMsg = new ResultMsg<Result>();
-
-            ResultMsg<String> result = null;
-            if (data is HttpReqEntity)
-            {
-                var tmp = data as HttpReqEntity;
-                String url = apiPath;
-                result = HttpHelper.Http(url, tmp);
-            }
+            var qry = RequestServer<RequestT, Result>(apiPath, data);
+            if(qry.IsSuccess())
+                return qry.ResultObj;
             else
             {
-                String strData = String.Empty;
-                if (null != data) strData = JsonFormatter.Serialize(data);
-                result = RequestServer(apiPath, HttpMethod.POST, strData);
-            }
-
-            if (result.Status == ResultStatus.Success)
-            {
-                if (!String.IsNullOrEmpty(result.ResultObj))
-                {
-                    Result tmp = JsonFormatter.Deserialize<Result>(result.ResultObj);
-                    if (tmp == null)
-                        resultMsg.SetFailure("数据请求错误,返回对象为空!");
-                    else
-                    {
-                        resultMsg.ResultObj = tmp;
-                        resultMsg.Msg = result.ResultObj;
-                    }
-                }
+                if (qry.ResultObj == null)
+                    return new Result().SetFailure(qry.Msg);
                 else
-                    resultMsg.SetFailure("数据请求错误,返回对象为空!");
+                    return qry.ResultObj;
             }
-            else
-                resultMsg.SetFailure(result.Msg);
-
-            return resultMsg;
+                
+            
         }
     }
 }

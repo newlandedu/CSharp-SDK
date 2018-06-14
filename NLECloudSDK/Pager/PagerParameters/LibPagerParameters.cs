@@ -23,7 +23,7 @@ namespace NLECloudSDK
         /// <summary>
         /// 页面索引
         /// </summary>
-        public int PageIndex
+        public virtual int PageIndex
         {
             get
             {
@@ -41,7 +41,7 @@ namespace NLECloudSDK
         /// <summary>
         /// 页面大小
         /// </summary>
-        public int PageSize
+        public virtual int PageSize
         {
             get
             {

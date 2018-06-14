@@ -53,40 +53,22 @@
     <Compile Include="Common\ResultMsg.cs" />
     <Compile Include="Common\ResultStatus.cs" />
     <Compile Include="Common\TimeoutTask.cs" />
-    <Compile Include="Enum\ProjectAccessVerifyResult.cs" />
-    <Compile Include="Enum\SensorType.cs" />
     <Compile Include="Model\AccountLoginDTO.cs" />
     <Compile Include="Model\AccountLoginResultDTO.cs" />
-    <Compile Include="Model\ActuatorQueryData.cs" />
     <Compile Include="Model\ApiPagingQueryBase.cs" />
-    <Compile Include="Model\CameraQueryData.cs" />
     <Compile Include="Model\SensorDataPointDTO.cs" />
-    <Compile Include="Model\DatasFuzzyQryPagingParas.cs" />
-    <Compile Include="Model\DeviceAddParas.cs" />
-    <Compile Include="Model\DeviceBaseInfoDTO.cs" />
+    <Compile Include="Model\SensorDataFuzzyQryPagingParas.cs" />
+    <Compile Include="Model\DeviceAddUpdateDTO.cs" />
     <Compile Include="Model\DeviceFuzzyQryPagingParas.cs" />
     <Compile Include="Model\DeviceInfoDTO.cs" />
     <Compile Include="Model\DeviceSensorDataDTO.cs" />
     <Compile Include="Model\OnlineDataDTO.cs" />
     <Compile Include="Model\ProjectFuzzyQryPagingParas.cs" />
-    <Compile Include="Model\GatewayAddApiDTO.cs" />
-    <Compile Include="Model\GatewayDeviceActuatorInfoDTO.cs" />
-    <Compile Include="Model\GatewayDeviceCameraInfoDTO.cs" />
-    <Compile Include="Model\GatewayDeviceChartDataDTO.cs" />
-    <Compile Include="Model\GatewayDeviceDataDTO.cs" />
-    <Compile Include="Model\GatewayDeviceHistoryQryParas.cs" />
-    <Compile Include="Model\GatewayDeviceInfoDTO.cs" />
-    <Compile Include="Model\GatewayDeviceSensorInfoDTO.cs" />
-    <Compile Include="Model\GatewayInfoDTO.cs" />
-    <Compile Include="Model\GatewayOnlineDataDTO.cs" />
-    <Compile Include="Model\GatewayOnlineRecordListDTO.cs" />
-    <Compile Include="Model\GatewayDeviceListDataDTO.cs" />
     <Compile Include="Model\SensorBaseInfoDTO.cs" />
-    <Compile Include="Model\SensorBaseQueryData.cs" />
+    <Compile Include="Model\SensorAddUpdateBase.cs" />
     <Compile Include="Model\SensorDataDTO.cs" />
     <Compile Include="Model\SensorDataInfoDTO.cs" />
-    <Compile Include="Model\SensorDataListAddBaseDTO.cs" />
-    <Compile Include="Model\SensorQueryData.cs" />
+    <Compile Include="Model\SensorDataListAddDTO.cs" />
     <Compile Include="NLECloudAPIUrl.cs" />
     <Compile Include="Pager\PagerParameters\LibPagerParameters.cs" />
     <Compile Include="Pager\PagerSet\DataSetPagerSet.cs" />
@@ -95,6 +77,9 @@
     <Compile Include="Model\ProjectInfoDTO.cs" />
     <Compile Include="NLECloudAPI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Enum\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

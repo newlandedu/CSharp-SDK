@@ -17,47 +17,62 @@ using System.Threading.Tasks;
 ************************************************************/
 namespace NLECloudSDK.Model
 {
-    public class DeviceAddParas
+    /// <summary>
+    /// 设备添加API DTO
+    /// </summary>
+    public class DeviceAddUpdateDTO 
     {
         /// <summary>
-        /// 通讯协议（1:TCP 2:MQTT 3:HTTP） 
+        /// 构造函数
         /// </summary>
-        public byte Protocol { get; set; }
+        public DeviceAddUpdateDTO()
+        {
+            this.IsTrans = true;
+            this.IsShare = true;
+        }
 
         /// <summary>
-        /// 数据上报状态，true | false（可选，默认为ture） 
+        /// 通讯协议（1:TCP 2:MQTT 3:HTTP）
         /// </summary>
-        public Boolean IsTrans { get; set; }
+        public virtual Byte Protocol { get; set; }
+
+        /// <summary>
+        /// 数据上报状态，true | false（可选，默认为ture）
+        /// </summary>
+        public virtual Boolean IsTrans { get; set; }
 
         /// <summary>
         /// 项目ID（一个数字）或标识码（一个32位字符串）
         /// </summary>
-        public string ProjectIdOrTag { get; set; }
+        public virtual String ProjectIdOrTag { get; set; }
 
         /// <summary>
         /// 设备名称（中英文、数字的6到15个字）
         /// </summary>
-        public string Name { get; set; }
+        public virtual String Name { get; set; }
 
 
         /// <summary>
-        /// 设备标识（英文、数字或其组合6到30个字符） 
+        /// 设备标识（英文、数字或其组合6到30个字符）
         /// </summary>
-        public string Tag { get; set; }
+        public virtual String Tag { get; set; }
+
 
         /// <summary>
         /// 设备座标（可选，格式为经度值, 纬度值）
         /// </summary>
-        public string Coordinate { get; set; }
+        public virtual String Coordinate { get; set; }
 
         /// <summary>
         /// 设备头像（可选）
         /// </summary>
-        public string DeviceImg { get; set; }
+        public virtual String DeviceImg { get; set; }
+
 
         /// <summary>
-        /// 数据保密性，true | false（可选，默认为ture） 
+        /// 数据保密性，true | false（可选，默认为ture）
         /// </summary>
-        public Boolean IsShare { get; set; }
+        public virtual Boolean IsShare { get; set; }
     }
+
 }

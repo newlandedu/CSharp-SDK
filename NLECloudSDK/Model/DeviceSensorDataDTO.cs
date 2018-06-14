@@ -17,21 +17,24 @@ using System.Threading.Tasks;
 ************************************************************/
 namespace NLECloudSDK.Model
 {
+    /// <summary>
+    /// 设备传感数据
+    /// </summary>
     public class DeviceSensorDataDTO
     {
         /// <summary>
         /// 设备ID
         /// </summary>
-        public int DeviceID { get; set; }
+        public virtual Int32 DeviceID { get; set; }
 
         /// <summary>
         /// 设备名
         /// </summary>
-        public string Name { get; set; }
+        public virtual String Name { get; set; }
 
         /// <summary>
         /// 传感数据列表
         /// </summary>
-        public List<SensorDataDTO> Datas { get; set; }
+        public IEnumerable<SensorDataDTO> Datas { get; set; }
     }
 }

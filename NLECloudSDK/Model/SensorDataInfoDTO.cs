@@ -4,26 +4,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-/************************************************************
-*CLR版本:4.0.30319.42000
-*命名空间:NLECloudSDK.Model
-*文件名:SensorDataInfoDTO
-*创建时间:2018/5/4 14:35:09
-==============================================================
-*修改人:
-*修改时间:2018/5/4 14:35:09
-*修改描述:
-
-************************************************************/
 namespace NLECloudSDK.Model
 {
+    /// <summary>
+    /// 设备传感数据
+    /// </summary>
     public class SensorDataInfoDTO
     {
         /// <summary>
         /// 设备ID
         /// </summary>
-        public int DeviceId { get; set; }
+        public virtual Int32 DeviceId { get; set; }
 
-        public List<SensorDataAddDTO> DataPoints { get; set; }
+        /// <summary>
+        /// 传感数据列表
+        /// </summary>
+        public IEnumerable<SensorDataAddDTO> DataPoints { get; set; }
     }
 }

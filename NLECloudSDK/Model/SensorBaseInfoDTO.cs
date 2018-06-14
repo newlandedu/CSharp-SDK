@@ -17,6 +17,9 @@ using System.Threading.Tasks;
 ************************************************************/
 namespace NLECloudSDK.Model
 {
+    /// <summary>
+    /// 传感基础信息
+    /// </summary>
     public class SensorBaseInfoDTO : SensorDataPointDTO
     {
         /// <summary>
