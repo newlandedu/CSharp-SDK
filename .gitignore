@@ -1,3 +1,4 @@
 .vs/
-NLECloudSDK.v12.suo
 NLECloudSDKSample/
+NLECloudSDK.v12.suo
+.gitignore
