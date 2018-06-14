@@ -1,4 +1,6 @@
 .vs/
 NLECloudSDKSample/
+NLECloudSDK/obj
+NLECloudSDKTest/obj
 NLECloudSDK.v12.suo
 .gitignore
