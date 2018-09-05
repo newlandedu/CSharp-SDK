@@ -42,7 +42,7 @@ namespace NLECloudSDK
         /// <param name="apiPath"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static ResultMsg<ResponseT> RequestServer<RequestT, ResponseT>(String apiPath, RequestT data)
+        public static ResultMsg<ResponseT> RequestServer<RequestT, ResponseT>(String apiPath, RequestT data , Func<String, ResultMsg<ResponseT>> succCallback = null)
         {
             ResultMsg<ResponseT> resultMsg = new ResultMsg<ResponseT>();
 
@@ -62,30 +62,35 @@ namespace NLECloudSDK
             
             if (result.Status == ResultStatus.Success)
             {
-                if (!String.IsNullOrEmpty(result.ResultObj))
+                if(succCallback != null)
+                    return succCallback(result.ResultObj);
+                else
                 {
-                    Type type = typeof(ResponseT);
-                    if(type == ResultMsgT || type == ResultT)
+                    if (!String.IsNullOrEmpty(result.ResultObj))
                     {
-                        ResponseT tmp = JsonFormatter.Deserialize<ResponseT>(result.ResultObj);
-                        if (tmp == null)
-                            resultMsg.SetFailure("数据请求错误,返回对象为空!");
+                        Type type = typeof(ResponseT);
+                        if (type == ResultMsgT || type == ResultT)
+                        {
+                            ResponseT tmp = JsonFormatter.Deserialize<ResponseT>(result.ResultObj);
+                            if (tmp == null)
+                                resultMsg.SetFailure("数据请求错误,返回对象为空!");
+                            else
+                            {
+                                resultMsg.ResultObj = tmp;
+                            }
+                        }
                         else
                         {
-                            resultMsg.ResultObj = tmp;
+                            ResultMsg<ResponseT> tmp = JsonFormatter.Deserialize<ResultMsg<ResponseT>>(result.ResultObj);
+                            if (tmp == null)
+                                resultMsg.SetFailure("数据请求错误,返回对象为空!");
+                            else
+                                resultMsg = tmp;
                         }
                     }
                     else
-                    {
-                        ResultMsg<ResponseT> tmp = JsonFormatter.Deserialize<ResultMsg<ResponseT>>(result.ResultObj);
-                        if (tmp == null)
-                            resultMsg.SetFailure("数据请求错误,返回对象为空!");
-                        else
-                            resultMsg = tmp;
-                    }
+                        resultMsg.SetFailure("数据请求错误,返回对象为空!");
                 }
-                else
-                    resultMsg.SetFailure("数据请求错误,返回对象为空!");
             }
             else
                 resultMsg.SetFailure(result.Msg);

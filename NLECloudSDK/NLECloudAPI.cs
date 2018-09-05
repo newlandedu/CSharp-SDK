@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NLECloudSDK.Model;
 using System;
 using System.Collections.Generic;
@@ -571,7 +572,41 @@ namespace NLECloudSDK
             req.Headers.Add("AccessToken", token);
 
             //4、定义该API接口返回的对象
-            result = RequestAPIHelper.RequestServer<HttpReqEntity, SensorBaseInfoDTO>(apiPath, req);
+            result = RequestAPIHelper.RequestServer<HttpReqEntity, SensorBaseInfoDTO>(apiPath, req , (json)=> 
+            {
+                var qry = new ResultMsg<SensorBaseInfoDTO>();
+                if (String.IsNullOrEmpty(json))
+                    return qry.SetFailure("数据请求错误,返回对象为空!");
+
+                JObject jObject = JObject.Parse(json);
+                if (jObject["ResultObj"].HasValues && jObject["ResultObj"].SelectToken("Groups") != null)
+                {
+                    switch (jObject["ResultObj"]["Groups"].ToString())
+                    {
+                        case "1":
+                            {
+                                var tmp = JsonFormatter.Deserialize<ResultMsg<SensorInfoDTO>>(json);
+                                qry.ResultObj = tmp.ResultObj;
+                            }
+                            break;
+                        case "2":
+                            {
+                                var tmp = JsonFormatter.Deserialize<ResultMsg<ActuatorInfoDTO>>(json);
+                                qry.ResultObj = tmp.ResultObj;
+                            }
+                            break;
+                        case "3":
+                            {
+                                var tmp = JsonFormatter.Deserialize<ResultMsg<CameraInfoDTO>>(json);
+                                qry.ResultObj = tmp.ResultObj;
+                            }
+                            break;
+                    }
+                    return qry;
+                }
+                else
+                    return qry.SetFailure("数据请求错误,返回对象为空!");
+            });
 
             if (result.IsSuccess() && result.ResultObj != null)
             {
@@ -805,7 +840,8 @@ namespace NLECloudSDK
 
             //2、根据该API接口 的请求参数中 得知需要创建个URI Parameters String类型参数，所以该参数直接跟在apiPath中
             apiPath = apiPath.Replace("{deviceid}", query.DeviceID.ToString());//将API地址中的{gatewayTag}替换成真实设备标识
-            apiPath += string.Format("?{0}&{1}&{2}&{3}&{4}&{5}", "deviceId=" + query.DeviceID, "Method=" + query.Method, "TimeAgo=" + query.TimeAgo, "Sort=" + query.Sort, "PageSize=" + query.PageSize, "PageIndex=" + query.PageIndex);
+            apiPath += string.Format("?{0}&{1}&{2}&{3}&{4}", "Method=" + query.Method, "TimeAgo=" + query.TimeAgo, "Sort=" + query.Sort, "PageSize=" + query.PageSize, "PageIndex=" + query.PageIndex);
+            apiPath += string.Format("&{0}&{1}&{2}", "ApiTags=" + query.ApiTags, "StartDate=" + query.StartDate, "EndDate=" + query.EndDate);
             //3、由于调用该API需要Token，所以我们定义了一个通用的对象HttpReqEntity，在AccessToken当成头部请求信息提交过去
             HttpReqEntity req = new HttpReqEntity();
             req.Method = HttpMethod.GET;

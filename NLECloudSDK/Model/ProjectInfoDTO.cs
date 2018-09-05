@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NLECloudSDK
+namespace NLECloudSDK.Model
 {
     /// <summary>
     /// 项目信息

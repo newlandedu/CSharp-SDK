@@ -30,10 +30,10 @@ namespace Test
         //测试的参数变量，请改成你自己的值
         private static String account = "18965562233";      //云平台登录帐号
         private static String password = "123456";          //云平台登录密码
-        private static Int32 projectId = 282;               //云平上面的项目ID
-        private static String devIds = "282";               //批量查询设备最新数据等接口用到
-        private static Int32 deviceId = 282;                //云平上面的项目下的设备ID
-        private static String apiTag = "m_temperature";     //查询传感器的传感标识名
+        private static Int32 projectId = 10315;               //云平上面的项目ID
+        private static String devIds = "10367";               //批量查询设备最新数据等接口用到
+        private static Int32 deviceId = 10367;                //云平上面的项目下的设备ID
+        private static String apiTag = "nl_temperature";     //查询传感器的传感标识名
         private static String actuatorApiTag = "nl_fan";    //发送命令的执行器标识名
 
 
@@ -254,13 +254,20 @@ namespace Test
             var query2 = new SensorDataFuzzyQryPagingParas()
             {
                 DeviceID = deviceId,
-                Method = 2,
-                TimeAgo = 30,
+                //Method = 2,
+                //TimeAgo = 30,
+                ApiTags = apiTag,
+                StartDate = "2017-09-03",
                 Sort = "DESC",
-                PageSize = 1000,
+                PageSize = 100,
                 PageIndex = 1
             };
             qry = SDK.GetSensorDatas(query2, Token);
+            var tmp = ((ResultMsg<SensorDataInfoDTO>)qry);
+            if (tmp.IsSuccess() && tmp.ResultObj != null)
+            {
+
+            }
             Console.WriteLine("查询传感数据返回JSON:" + Environment.NewLine);
             Console.WriteLine(SerializeToJson(qry) + Environment.NewLine);
 
