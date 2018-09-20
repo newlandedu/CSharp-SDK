@@ -821,7 +821,7 @@ namespace NLECloudSDK
         }
 
         /// <summary>
-        /// 查询传感数据
+        /// 模糊查询传感数据
         /// </summary>
         /// <returns></returns>
         public ResultMsg<SensorDataInfoDTO> GetSensorDatas(SensorDataFuzzyQryPagingParas query,string token = null)
@@ -866,6 +866,54 @@ namespace NLECloudSDK
 
             return result;
         }
+
+        /// <summary>
+        /// 聚合查询传感数据
+        /// </summary>
+        /// <returns></returns>
+        public ResultMsg<SensorDataInfoDTO> GroupingSensorDatas(SensorDataJuHeQryPagingParas query, string token = null)
+        {
+            var result = new ResultMsg<SensorDataInfoDTO>();
+
+            var vry = TokenVerify(ref token);
+            if (!vry.IsSuccess())
+            {
+                vry.CopyTo(result);
+                return result;
+            }
+
+            //1、先定义该API接口路径，可以从http://api.nlecloud.com/页面的得知
+            String apiPath = String.Format("{0}/{1}/grouping", mApiHost, NLECloudAPIUrl.DatasOfSensorUrl);
+
+            //2、根据该API接口 的请求参数中 得知需要创建个URI Parameters String类型参数，所以该参数直接跟在apiPath中
+            apiPath = apiPath.Replace("{deviceid}", query.DeviceID.ToString());//将API地址中的{gatewayTag}替换成真实设备标识
+            apiPath += string.Format("?{0}&{1}", "GroupBy=" + query.GroupBy, "Func=" + query.Func);
+            apiPath += string.Format("&{0}&{1}&{2}", "ApiTags=" + query.ApiTags, "StartDate=" + query.StartDate, "EndDate=" + query.EndDate);
+            //3、由于调用该API需要Token，所以我们定义了一个通用的对象HttpReqEntity，在AccessToken当成头部请求信息提交过去
+            HttpReqEntity req = new HttpReqEntity();
+            req.Method = HttpMethod.GET;
+            req.Headers.Add("AccessToken", token);
+
+            //4、定义该API接口返回的对象
+            result = RequestAPIHelper.RequestServer<HttpReqEntity, SensorDataInfoDTO>(apiPath, req);
+
+            if (result.IsSuccess() && result.ResultObj != null && result.ResultObj.DataPoints != null)
+            {
+                foreach (SensorDataAddDTO p in result.ResultObj.DataPoints)
+                {
+                    if (p.PointDTO != null)
+                    {
+                        foreach (var w in p.PointDTO)
+                        {
+                            ValueConvertToByteAry(w.Value);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
         #endregion
 
         #region -- 发送命令/控制设备API -- 

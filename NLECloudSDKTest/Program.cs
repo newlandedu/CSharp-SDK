@@ -250,25 +250,43 @@ namespace Test
             Console.WriteLine(SerializeToJson(qry) + Environment.NewLine);
 
 
-            //查询传感数据。===================请修改为自己的设备ID,传感标识名ApiTag
+            //模糊查询传感数据。===================请修改为自己的设备ID,传感标识名ApiTag
             var query2 = new SensorDataFuzzyQryPagingParas()
             {
                 DeviceID = deviceId,
-                //Method = 2,
+                Method = 6,
                 //TimeAgo = 30,
-                ApiTags = apiTag,
-                StartDate = "2017-09-03",
+                //ApiTags = "m_waterPH,m_waterNTU,m_waterConduct",
+                StartDate = "2018-09-13 12:06:09 ",
                 Sort = "DESC",
-                PageSize = 100,
+                PageSize = 30,
                 PageIndex = 1
             };
+            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+            sw.Start();
             qry = SDK.GetSensorDatas(query2, Token);
+            sw.Stop();
             var tmp = ((ResultMsg<SensorDataInfoDTO>)qry);
             if (tmp.IsSuccess() && tmp.ResultObj != null)
             {
 
             }
             Console.WriteLine("查询传感数据返回JSON:" + Environment.NewLine);
+            Console.WriteLine(SerializeToJson(qry) + Environment.NewLine);
+
+            //聚合查询传感数据。===================请修改为自己的设备ID,传感标识名ApiTag
+            var query3 = new SensorDataJuHeQryPagingParas()
+            {
+                DeviceID = deviceId,
+                //ApiTags = "nl_temperature,nl_fan",
+                GroupBy = 2,
+                Func = "MAX",
+                StartDate = "2018-01-02 12:06:09"
+            };
+            sw.Restart();
+            qry = SDK.GroupingSensorDatas(query3, Token);
+            sw.Stop();
+            Console.WriteLine("聚合查询传感数据返回JSON:" + Environment.NewLine);
             Console.WriteLine(SerializeToJson(qry) + Environment.NewLine);
 
             #endregion
