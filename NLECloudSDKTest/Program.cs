@@ -231,15 +231,15 @@ namespace Test
             var sensorData1 = new SensorDataAddDTO() { ApiTag = apiTag };
             sensorData1.PointDTO = new List<SensorDataPointDTO>()
             {
-                 new SensorDataPointDTO() { Value = 30 },
-                 new SensorDataPointDTO() { Value = 55 }
+                 new SensorDataPointDTO() { Value = 3000 },
+                 new SensorDataPointDTO() { Value = 5500 }
             };
 
-            var apiTag2 = "binary";
+            var apiTag2 = "apiTagDemo";
             SensorDataAddDTO sensorData2 = new SensorDataAddDTO() { ApiTag = apiTag2 };
-            sensorData1.PointDTO = new List<SensorDataPointDTO>()
+            sensorData2.PointDTO = new List<SensorDataPointDTO>()
             {
-                 new SensorDataPointDTO() { Value = System.Text.Encoding.UTF8.GetBytes("asdadasd") }
+                 new SensorDataPointDTO() { Value = "dataDemo" }
             };
 
             var data = new SensorDataListAddDTO();

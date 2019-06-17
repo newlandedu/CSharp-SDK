@@ -824,9 +824,9 @@ namespace NLECloudSDK
         /// 模糊查询传感数据
         /// </summary>
         /// <returns></returns>
-        public ResultMsg<SensorDataInfoDTO> GetSensorDatas(SensorDataFuzzyQryPagingParas query,string token = null)
+        public ResultMsg<SensorDataPageDTO> GetSensorDatas(SensorDataFuzzyQryPagingParas query,string token = null)
         {
-            var result = new ResultMsg<SensorDataInfoDTO>();
+            var result = new ResultMsg<SensorDataPageDTO>();
 
             var vry = TokenVerify(ref token);
             if (!vry.IsSuccess())
@@ -848,7 +848,7 @@ namespace NLECloudSDK
             req.Headers.Add("AccessToken", token);
 
             //4、定义该API接口返回的对象
-            result = RequestAPIHelper.RequestServer<HttpReqEntity,SensorDataInfoDTO>(apiPath, req);
+            result = RequestAPIHelper.RequestServer<HttpReqEntity, SensorDataPageDTO>(apiPath, req);
 
             if (result.IsSuccess() && result.ResultObj != null && result.ResultObj.DataPoints != null)
             {
